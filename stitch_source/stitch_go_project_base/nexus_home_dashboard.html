@@ -1,0 +1,486 @@
+<!DOCTYPE html><html lang="en"><head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NEXUS X — Home Dashboard</title>
+  <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+  <script id="tailwind-config">/** @type {import('tailwindcss').Config} */
+globalThis.tailwind = globalThis.tailwind || {};
+globalThis.tailwind.config = {
+  darkMode: 'class',
+  theme: {
+    extend: {
+      colors: {
+        'accent': '#0EA5E9',
+        'accent-glow': 'rgba(14, 165, 233, 0.35)',
+        'lavender': '#8B5CF6',
+        'cyan': '#06B6D4',
+        'success': '#10B981',
+        'warning': '#F59E0B',
+        'danger': '#EF4444',
+        'light-primary': '#0284C7',
+        'light-on-primary': '#131313',
+        'light-secondary': '#7C3AED',
+        'light-on-secondary': '#FFFFFF',
+        'light-surface': '#F0F4F9',
+        'light-on-surface': '#0F172A',
+        'light-surface-container-low': '#FFFFFF',
+        'light-surface-container': 'rgba(255, 255, 255, 0.68)',
+        'light-surface-container-high': 'rgba(255, 255, 255, 0.88)',
+        'light-surface-glass': 'rgba(255, 255, 255, 0.65)',
+        'light-surface-glass-border': 'rgba(255, 255, 255, 0.75)',
+        'light-outline': '#64748B',
+        'light-outline-variant': 'rgba(203, 213, 225, 0.6)',
+        'dark-primary': '#38BDF8',
+        'dark-on-primary': '#082F49',
+        'dark-secondary': '#C084FC',
+        'dark-on-secondary': '#3B0764',
+        'dark-surface': '#0F172A',
+        'dark-on-surface': '#F8FAFC',
+        'dark-surface-container-low': '#1E293B',
+        'dark-surface-container': '#334155',
+        'dark-surface-container-high': '#475569',
+        'dark-surface-glass': 'rgba(30, 41, 59, 0.7)',
+        'dark-surface-glass-border': 'rgba(255, 255, 255, 0.15)',
+        'dark-outline': '#94A3B8',
+        'dark-outline-variant': '#334155',
+      },
+      borderRadius: {
+        'sm': '8px',
+        'DEFAULT': '14px',
+        'md': '18px',
+        'lg': '24px',
+        'xl': '32px',
+        'full': '9999px',
+      },
+      spacing: {
+        'gutter-xs': '4px',
+        'gutter-sm': '8px',
+        'gutter-md': '12px',
+        'gutter-lg': '16px',
+        'gutter-xl': '24px',
+        'section': '32px',
+        'page-margin': '20px',
+        'nav-dock-height': '72px',
+      },
+      fontFamily: {
+        'display': ['"Plus Jakarta Sans"', 'sans-serif'],
+        'headline': ['"Plus Jakarta Sans"', 'sans-serif'],
+        'body': ['"Instrument Sans"', 'sans-serif'],
+        'label': ['"Plus Jakarta Sans"', 'sans-serif'],
+        'code': ['"Source Code Pro"', 'monospace'],
+      },
+      fontSize: {
+        'display-lg': ['40px', { lineHeight: '48px', letterSpacing: '-0.8px', fontWeight: '700' }],
+        'display-lg-mobile': ['32px', { lineHeight: '38px', letterSpacing: '-0.6px', fontWeight: '700' }],
+        'headline-xl': ['34px', { lineHeight: '42px', letterSpacing: '-0.5px', fontWeight: '700' }],
+        'headline-xl-mobile': ['28px', { lineHeight: '34px', letterSpacing: '-0.4px', fontWeight: '700' }],
+        'headline-lg': ['26px', { lineHeight: '32px', letterSpacing: '-0.3px', fontWeight: '600' }],
+        'headline-lg-mobile': ['22px', { lineHeight: '28px', letterSpacing: '-0.2px', fontWeight: '600' }],
+        'headline-md': ['18px', { lineHeight: '24px', letterSpacing: '-0.1px', fontWeight: '600' }],
+        'headline-sm': ['16px', { lineHeight: '22px', letterSpacing: '0px', fontWeight: '600' }],
+        'body-lg': ['16px', { lineHeight: '24px', letterSpacing: '0px', fontWeight: '400' }],
+        'body-md': ['14px', { lineHeight: '20px', letterSpacing: '0px', fontWeight: '400' }],
+        'body-sm': ['12px', { lineHeight: '16px', letterSpacing: '0.1px', fontWeight: '400' }],
+        'label-lg': ['14px', { lineHeight: '20px', letterSpacing: '0.1px', fontWeight: '600' }],
+        'label-md': ['12px', { lineHeight: '16px', letterSpacing: '0.2px', fontWeight: '500' }],
+        'label-sm': ['11px', { lineHeight: '14px', letterSpacing: '0.3px', fontWeight: '500' }],
+        'code-md': ['13px', { lineHeight: '18px', letterSpacing: '0px', fontWeight: '500' }],
+        'code-sm': ['11px', { lineHeight: '14px', letterSpacing: '0px', fontWeight: '500' }],
+      },
+      transitionDuration: {
+        'state-change': '140ms',
+        'card-spring': '320ms',
+        'sheet-slide': '380ms',
+      },
+      transitionDelay: {
+        'state-change': '0ms',
+        'card-spring': '0ms',
+        'sheet-slide': '0ms',
+      },
+      transitionTimingFunction: {
+        'state-change': 'cubic-bezier(0.16, 1, 0.3, 1)',
+        'card-spring': 'cubic-bezier(0.34, 1.56, 0.64, 1)',
+        'sheet-slide': 'cubic-bezier(0.16, 1, 0.3, 1)',
+      },
+    },
+  },
+};
+if (typeof module !== 'undefined') module.exports = globalThis.tailwind.config;
+</script>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700&amp;family=Instrument+Sans:wght@400;500;600&amp;family=Source+Code+Pro:wght@500;600&amp;display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=block" rel="stylesheet">
+  <style>
+    .material-symbols-outlined, .material-symbols-rounded, .material-symbols-sharp, .material-icons {
+      display: inline-block; width: 1em; height: 1em; line-height: 1 !important;
+      box-sizing: content-box; overflow: hidden; white-space: nowrap; direction: ltr; vertical-align: middle;
+    }
+    /* iOS 26 Light Liquid Glass Material */
+    .liquid-glass {
+      background: rgba(255, 255, 255, 0.65);
+      backdrop-filter: blur(28px);
+      -webkit-backdrop-filter: blur(28px);
+      border: 1px solid rgba(255, 255, 255, 0.85);
+      box-shadow: 0 16px 36px -10px rgba(15, 23, 42, 0.08), inset 0 1px 0 rgba(255, 255, 255, 0.95);
+    }
+    .liquid-glass-subtle {
+      background: rgba(255, 255, 255, 0.52);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid rgba(255, 255, 255, 0.75);
+      box-shadow: 0 8px 24px -6px rgba(15, 23, 42, 0.05), inset 0 1px 0 rgba(255, 255, 255, 0.9);
+    }
+    .liquid-nav-dock {
+      background: rgba(255, 255, 255, 0.70);
+      backdrop-filter: blur(32px);
+      -webkit-backdrop-filter: blur(32px);
+      border: 1px solid rgba(255, 255, 255, 0.9);
+      box-shadow: 0 20px 48px -12px rgba(15, 23, 42, 0.14), inset 0 1px 0 rgba(255, 255, 255, 1);
+    }
+    .liquid-active-pill {
+      background: rgba(2, 132, 199, 0.12);
+      border: 1px solid rgba(2, 132, 199, 0.28);
+      box-shadow: 0 4px 14px rgba(2, 132, 199, 0.16);
+    }
+    .progress-ring-circle {
+      transition: stroke-dashoffset 0.85s cubic-bezier(0.16, 1, 0.3, 1);
+      transform: rotate(-90deg);
+      transform-origin: 50% 50%;
+    }
+  </style>
+</head>
+<body class="bg-gradient-to-br from-[#E0E7FF] via-[#F3E8FF] to-[#E0F2FE] text-slate-900 font-body antialiased min-h-[884px] relative overflow-x-hidden pb-36" data-stitch-vh="min-h-[884px]===min-h-screen">
+
+  <!-- Ambient Light Mesh Wallpaper (Visible through all glass panels) -->
+  <div class="fixed top-[-80px] right-[-60px] w-96 h-96 bg-gradient-to-bl from-sky-300/40 via-cyan-200/30 to-transparent rounded-full blur-[80px] pointer-events-none -z-10"></div>
+  <div class="fixed top-[280px] left-[-80px] w-96 h-96 bg-gradient-to-tr from-purple-300/35 via-pink-200/25 to-transparent rounded-full blur-[90px] pointer-events-none -z-10"></div>
+  <div class="fixed bottom-[100px] right-[-40px] w-80 h-80 bg-gradient-to-tl from-blue-300/30 via-indigo-200/20 to-transparent rounded-full blur-[85px] pointer-events-none -z-10"></div>
+
+  <!-- iOS 26 Status Bar (Dynamic Island Safe Area) -->
+  <div class="sticky top-0 z-40 px-7 pt-3.5 pb-2 flex items-center justify-between text-slate-700 font-label text-label-sm backdrop-blur-md bg-white/20">
+    <span class="font-code text-code-sm font-semibold text-slate-900">09:41</span>
+    <div class="w-24 h-5 rounded-full bg-slate-900/90 shadow-inner flex items-center justify-between px-2 text-[10px] text-white">
+      <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
+      <span class="font-code text-[9px] tracking-wider text-slate-300">NEXUS X</span>
+    </div>
+    <div class="flex items-center gap-1.5 text-slate-800">
+      <span class="material-symbols-outlined text-[16px]">signal_cellular_4_bar</span>
+      <span class="material-symbols-outlined text-[16px]">wifi</span>
+      <span class="material-symbols-outlined text-[18px]">battery_charging_90</span>
+    </div>
+  </div>
+
+  <!-- Main Content Flow -->
+  <main class="px-5 pt-3 space-y-6">
+
+    <!-- Top Greeting & Global Actions -->
+    <header class="flex items-center justify-between">
+      <div>
+        <p data-design-text-token="label-sm" class="font-label text-label-sm text-slate-600 flex items-center gap-1.5 font-medium">
+          <span class="w-2 h-2 rounded-full bg-emerald-500 shadow-sm shadow-emerald-400"></span>
+          Good morning, Alex
+        </p>
+        <h1 data-design-text-token="headline-xl-mobile" class="font-headline text-headline-xl-mobile font-bold tracking-tight text-slate-900 mt-0.5">
+          Nexus Files
+        </h1>
+      </div>
+      <div class="flex items-center gap-2.5">
+        <a href="../file-browser/FileBrowser.html" aria-label="Search" class="w-10 h-10 rounded-full liquid-glass flex items-center justify-center text-slate-700 hover:text-sky-600 active:scale-95 transition-all">
+          <span class="material-symbols-outlined text-[20px]">search</span>
+        </a>
+        <div class="relative">
+          <button type="button" aria-label="Notifications" class="w-10 h-10 rounded-full liquid-glass flex items-center justify-center text-slate-700 hover:text-sky-600 active:scale-95 transition-all">
+            <span class="material-symbols-outlined text-[20px]">notifications</span>
+          </button>
+          <span class="absolute top-1 right-1 w-2.5 h-2.5 bg-sky-500 rounded-full border-2 border-white shadow-sm"></span>
+        </div>
+      </div>
+    </header>
+
+    <!-- Light Liquid Glass Animated Storage Dashboard Card -->
+    <!-- COMPONENT: card-elevated -->
+    <article data-component-id="card-elevated" data-component-type="card" data-component-variant="elevated" class="liquid-glass rounded-3xl p-5.5 relative overflow-hidden">
+      <div class="flex items-center justify-between mb-4">
+        <div>
+          <span data-design-text-token="label-sm" class="font-label text-label-sm text-sky-600 uppercase tracking-wider font-bold">Storage Drive</span>
+          <h2 data-design-text-token="headline-lg-mobile" class="font-headline text-headline-lg-mobile font-bold text-slate-900">UFS 4.0 Internal</h2>
+        </div>
+        <a href="../storage-analyzer/StorageAnalyzer.html" class="flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-label-sm font-label bg-sky-500/10 text-sky-600 border border-sky-500/25 hover:bg-sky-500/20 transition-all font-semibold">
+          <span>Analyze</span>
+          <span class="material-symbols-outlined text-[16px]">arrow_forward</span>
+        </a>
+      </div>
+
+      <!-- Storage Metrics Gauge + Details -->
+      <div class="flex items-center gap-5">
+        <!-- Radial Ring Visualizer -->
+        <div class="relative w-28 h-28 shrink-0 flex items-center justify-center">
+          <svg class="w-full h-full" viewBox="0 0 100 100">
+            <!-- Background Track -->
+            <circle cx="50" cy="50" r="40" stroke="rgba(226, 232, 240, 0.7)" stroke-width="7.5" fill="transparent"></circle>
+            <!-- Storage Used Arc (72%) -->
+            <circle cx="50" cy="50" r="40" stroke="url(#liquidLightGradient)" stroke-width="7.5" stroke-dasharray="251.2" stroke-dashoffset="70.3" stroke-linecap="round" fill="transparent" class="progress-ring-circle"></circle>
+            <defs>
+              <linearGradient id="liquidLightGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stop-color="#0284C7"></stop>
+                <stop offset="60%" stop-color="#38BDF8"></stop>
+                <stop offset="100%" stop-color="#818CF8"></stop>
+              </linearGradient>
+            </defs>
+          </svg>
+          <div class="absolute inset-0 flex flex-col items-center justify-center">
+            <span class="font-code text-[20px] font-bold text-slate-900">72<span class="text-[13px] text-sky-600 font-normal">%</span></span>
+            <span class="font-label text-[10px] text-slate-500 uppercase font-semibold">Used</span>
+          </div>
+        </div>
+
+        <!-- Drive Breakdown -->
+        <div class="flex-1 space-y-2.5">
+          <div class="flex justify-between items-baseline">
+            <span class="font-code text-code-md font-bold text-slate-800">368.6 GB</span>
+            <span class="font-code text-code-sm text-slate-500">512 GB Total</span>
+          </div>
+          <div class="flex justify-between items-baseline text-slate-600 text-body-sm font-medium">
+            <span>Free Space:</span>
+            <span class="font-code text-emerald-600 font-bold">143.4 GB</span>
+          </div>
+          <div class="pt-2.5 border-t border-slate-200/80 flex items-center justify-between text-body-sm">
+            <span class="flex items-center gap-1.5 text-slate-600">
+              <span class="material-symbols-outlined text-[16px] text-purple-600">sd_card</span>
+              SD Card:
+            </span>
+            <span class="font-code text-code-sm text-slate-800 font-medium">256 GB mounted</span>
+          </div>
+        </div>
+      </div>
+    </article>
+
+    <!-- Quick Access Categories Grid (Vibrant File Types over Milky Glass) -->
+    <section class="space-y-3">
+      <div class="flex items-center justify-between px-1">
+        <h3 data-design-text-token="headline-sm" class="font-headline text-headline-sm font-bold text-slate-900">Quick Access</h3>
+        <span class="font-label text-label-sm text-slate-500 font-medium">8 Categories</span>
+      </div>
+
+      <div class="grid grid-cols-4 gap-2.5">
+        <!-- Images -->
+        <a href="../file-browser/FileBrowser.html?filter=images" class="liquid-glass-subtle rounded-2xl p-3 flex flex-col items-center text-center group hover:bg-white active:scale-95 transition-all">
+          <div class="w-11 h-11 rounded-xl bg-sky-500/15 border border-sky-500/30 flex items-center justify-center text-sky-600 mb-1.5 group-hover:scale-105 transition-transform shadow-sm">
+            <span class="material-symbols-outlined text-[22px]">image</span>
+          </div>
+          <span class="font-label text-label-sm font-semibold text-slate-800">Images</span>
+          <span class="font-code text-[10px] text-slate-500">8,420</span>
+        </a>
+
+        <!-- Videos -->
+        <a href="../file-browser/FileBrowser.html?filter=videos" class="liquid-glass-subtle rounded-2xl p-3 flex flex-col items-center text-center group hover:bg-white active:scale-95 transition-all">
+          <div class="w-11 h-11 rounded-xl bg-purple-500/15 border border-purple-500/30 flex items-center justify-center text-purple-600 mb-1.5 group-hover:scale-105 transition-transform shadow-sm">
+            <span class="material-symbols-outlined text-[22px]">movie</span>
+          </div>
+          <span class="font-label text-label-sm font-semibold text-slate-800">Videos</span>
+          <span class="font-code text-[10px] text-slate-500">342</span>
+        </a>
+
+        <!-- Audio -->
+        <a href="../file-browser/FileBrowser.html?filter=audio" class="liquid-glass-subtle rounded-2xl p-3 flex flex-col items-center text-center group hover:bg-white active:scale-95 transition-all">
+          <div class="w-11 h-11 rounded-xl bg-emerald-500/15 border border-emerald-500/30 flex items-center justify-center text-emerald-600 mb-1.5 group-hover:scale-105 transition-transform shadow-sm">
+            <span class="material-symbols-outlined text-[22px]">music_note</span>
+          </div>
+          <span class="font-label text-label-sm font-semibold text-slate-800">Audio</span>
+          <span class="font-code text-[10px] text-slate-500">1,120</span>
+        </a>
+
+        <!-- Documents -->
+        <a href="../file-browser/FileBrowser.html?filter=docs" class="liquid-glass-subtle rounded-2xl p-3 flex flex-col items-center text-center group hover:bg-white active:scale-95 transition-all">
+          <div class="w-11 h-11 rounded-xl bg-amber-500/15 border border-amber-500/30 flex items-center justify-center text-amber-600 mb-1.5 group-hover:scale-105 transition-transform shadow-sm">
+            <span class="material-symbols-outlined text-[22px]">description</span>
+          </div>
+          <span class="font-label text-label-sm font-semibold text-slate-800">Docs</span>
+          <span class="font-code text-[10px] text-slate-500">694</span>
+        </a>
+
+        <!-- Downloads -->
+        <a href="../file-browser/FileBrowser.html?filter=downloads" class="liquid-glass-subtle rounded-2xl p-3 flex flex-col items-center text-center group hover:bg-white active:scale-95 transition-all">
+          <div class="w-11 h-11 rounded-xl bg-cyan-500/15 border border-cyan-500/30 flex items-center justify-center text-cyan-600 mb-1.5 group-hover:scale-105 transition-transform shadow-sm">
+            <span class="material-symbols-outlined text-[22px]">download</span>
+          </div>
+          <span class="font-label text-label-sm font-semibold text-slate-800">Downloads</span>
+          <span class="font-code text-[10px] text-slate-500">48 GB</span>
+        </a>
+
+        <!-- APKs -->
+        <a href="../file-browser/FileBrowser.html?filter=apk" class="liquid-glass-subtle rounded-2xl p-3 flex flex-col items-center text-center group hover:bg-white active:scale-95 transition-all">
+          <div class="w-11 h-11 rounded-xl bg-teal-500/15 border border-teal-500/30 flex items-center justify-center text-teal-600 mb-1.5 group-hover:scale-105 transition-transform shadow-sm">
+            <span class="material-symbols-outlined text-[22px]">android</span>
+          </div>
+          <span class="font-label text-label-sm font-semibold text-slate-800">APKs</span>
+          <span class="font-code text-[10px] text-slate-500">14 files</span>
+        </a>
+
+        <!-- Archives -->
+        <a href="../file-browser/FileBrowser.html?filter=archives" class="liquid-glass-subtle rounded-2xl p-3 flex flex-col items-center text-center group hover:bg-white active:scale-95 transition-all">
+          <div class="w-11 h-11 rounded-xl bg-indigo-500/15 border border-indigo-500/30 flex items-center justify-center text-indigo-600 mb-1.5 group-hover:scale-105 transition-transform shadow-sm">
+            <span class="material-symbols-outlined text-[22px]">folder_zip</span>
+          </div>
+          <span class="font-label text-label-sm font-semibold text-slate-800">Archives</span>
+          <span class="font-code text-[10px] text-slate-500">32 ZIPs</span>
+        </a>
+
+        <!-- Secure Vault -->
+        <div class="liquid-glass-subtle rounded-2xl p-3 flex flex-col items-center text-center group hover:bg-white active:scale-95 transition-all cursor-pointer">
+          <div class="w-11 h-11 rounded-xl bg-rose-500/15 border border-rose-500/30 flex items-center justify-center text-rose-600 mb-1.5 group-hover:scale-105 transition-transform shadow-sm">
+            <span class="material-symbols-outlined text-[22px]">lock</span>
+          </div>
+          <span class="font-label text-label-sm font-semibold text-slate-800">Vault</span>
+          <span class="font-code text-[10px] text-rose-600 font-semibold">Biometric</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- NEXUS X Diagnostic Tools & Locations -->
+    <section class="space-y-3">
+      <div class="flex items-center justify-between px-1">
+        <h3 data-design-text-token="headline-sm" class="font-headline text-headline-sm font-bold text-slate-900">Locations &amp; Tools</h3>
+        <span class="font-label text-label-sm text-slate-500">3 Available</span>
+      </div>
+
+      <!-- COMPONENT: list-interactive -->
+      <nav aria-label="Storage partitions" class="liquid-glass rounded-3xl p-2.5 space-y-1">
+        <a href="../file-browser/FileBrowser.html" class="flex items-center justify-between px-3 py-2.5 rounded-2xl hover:bg-white/80 text-slate-900 transition-colors group">
+          <div class="flex items-center gap-3">
+            <div class="w-10 h-10 rounded-xl bg-sky-500/15 border border-sky-500/25 flex items-center justify-center text-sky-600 shadow-sm">
+              <span class="material-symbols-outlined text-[20px]">phone_android</span>
+            </div>
+            <div>
+              <p class="font-headline text-headline-sm text-slate-900 font-semibold">Internal Storage</p>
+              <p class="font-body text-body-sm text-slate-500">Root Filesystem</p>
+            </div>
+          </div>
+          <div class="flex items-center gap-2">
+            <span class="font-code text-code-sm text-slate-500">143.4 GB free</span>
+            <span class="material-symbols-outlined text-slate-400 text-[18px] group-hover:translate-x-0.5 transition-transform">chevron_right</span>
+          </div>
+        </a>
+
+        <a href="../file-browser/FileBrowser.html" class="flex items-center justify-between px-3 py-2.5 rounded-2xl hover:bg-white/80 text-slate-900 transition-colors group">
+          <div class="flex items-center gap-3">
+            <div class="w-10 h-10 rounded-xl bg-purple-500/15 border border-purple-500/25 flex items-center justify-center text-purple-600 shadow-sm">
+              <span class="material-symbols-outlined text-[20px]">sd_card</span>
+            </div>
+            <div>
+              <p class="font-headline text-headline-sm text-slate-900 font-semibold">SanDisk Extreme 1TB</p>
+              <p class="font-body text-body-sm text-slate-500">microSDXC • exFAT</p>
+            </div>
+          </div>
+          <div class="flex items-center gap-2">
+            <span class="font-code text-code-sm text-slate-500">612 GB free</span>
+            <span class="material-symbols-outlined text-slate-400 text-[18px] group-hover:translate-x-0.5 transition-transform">chevron_right</span>
+          </div>
+        </a>
+
+        <a href="../file-browser/FileBrowser.html" class="flex items-center justify-between px-3 py-2.5 rounded-2xl hover:bg-white/80 text-slate-900 transition-colors group">
+          <div class="flex items-center gap-3">
+            <div class="w-10 h-10 rounded-xl bg-cyan-500/15 border border-cyan-500/25 flex items-center justify-center text-cyan-600 shadow-sm">
+              <span class="material-symbols-outlined text-[20px]">terminal</span>
+            </div>
+            <div>
+              <p class="font-headline text-headline-sm text-slate-900 font-semibold">ADB Center &amp; Terminal</p>
+              <p class="font-body text-body-sm text-slate-500">Wireless Shell &amp; APK installer</p>
+            </div>
+          </div>
+          <div class="flex items-center gap-2">
+            <span class="font-code text-code-sm text-emerald-600 font-medium">Ready</span>
+            <span class="material-symbols-outlined text-slate-400 text-[18px] group-hover:translate-x-0.5 transition-transform">chevron_right</span>
+          </div>
+        </a>
+      </nav>
+    </section>
+
+    <!-- Recent Files Section -->
+    <section class="space-y-3 pb-6">
+      <div class="flex items-center justify-between px-1">
+        <h3 data-design-text-token="headline-sm" class="font-headline text-headline-sm font-bold text-slate-900">Recent Files</h3>
+        <a href="../file-browser/FileBrowser.html" class="font-label text-label-sm text-sky-600 font-semibold hover:underline">View All</a>
+      </div>
+
+      <!-- COMPONENT: list-trailing-action -->
+      <div class="liquid-glass rounded-3xl p-2.5 space-y-1">
+        <a href="../file-preview/FilePreview.html" class="flex items-center justify-between p-2 rounded-2xl hover:bg-white/80 transition-colors group">
+          <div class="flex items-center gap-3.5 min-w-0">
+            <div class="w-10 h-10 rounded-xl bg-purple-500/15 border border-purple-500/25 flex items-center justify-center text-purple-600 shrink-0 shadow-sm">
+              <span class="material-symbols-outlined text-[22px]">video_library</span>
+            </div>
+            <div class="min-w-0">
+              <p class="font-body text-body-md font-semibold text-slate-900 truncate">Cinematic_Trailer_4K.mp4</p>
+              <p class="font-body text-body-sm text-slate-500 flex items-center gap-2">
+                <span class="font-code text-code-sm text-slate-700">1.84 GB</span>
+                <span>•</span>
+                <span>Today, 14:20</span>
+              </p>
+            </div>
+          </div>
+          <span class="material-symbols-outlined text-slate-400 text-[18px] group-hover:text-sky-600">chevron_right</span>
+        </a>
+
+        <a href="../file-preview/FilePreview.html" class="flex items-center justify-between p-2 rounded-2xl hover:bg-white/80 transition-colors group">
+          <div class="flex items-center gap-3.5 min-w-0">
+            <div class="w-10 h-10 rounded-xl bg-rose-500/15 border border-rose-500/25 flex items-center justify-center text-rose-600 shrink-0 shadow-sm">
+              <span class="material-symbols-outlined text-[22px]">picture_as_pdf</span>
+            </div>
+            <div class="min-w-0">
+              <p class="font-body text-body-md font-semibold text-slate-900 truncate">Project_Nexus_Whitepaper.pdf</p>
+              <p class="font-body text-body-sm text-slate-500 flex items-center gap-2">
+                <span class="font-code text-code-sm text-slate-700">4.6 MB</span>
+                <span>•</span>
+                <span>Yesterday, 18:45</span>
+              </p>
+            </div>
+          </div>
+          <span class="material-symbols-outlined text-slate-400 text-[18px] group-hover:text-sky-600">chevron_right</span>
+        </a>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- iOS 26 Signature Floating Pill Navigation Dock (Home, Files, Device, Tools, Settings) -->
+  <!-- COMPONENT: tabs-with-icon -->
+  <nav aria-label="Main navigation" class="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 w-[92%] max-w-[364px]">
+    <div class="liquid-nav-dock flex items-center justify-around px-2 py-1.5 rounded-full">
+      <!-- 1. Home (Active: Bright Blue Highlight) -->
+      <a href="../home-dashboard/HomeDashboard.html" class="liquid-active-pill flex flex-col items-center gap-0.5 px-3 py-1 rounded-full text-light-primary" aria-current="page">
+        <span class="material-symbols-outlined text-[22px]" style="font-variation-settings: &#39;FILL&#39; 1;">home</span>
+        <span data-design-text-token="label-sm" class="font-label text-label-sm font-bold">Home</span>
+      </a>
+
+      <!-- 2. Files -->
+      <a href="../file-browser/FileBrowser.html" class="flex flex-col items-center gap-0.5 px-3 py-1 rounded-full text-slate-600 hover:text-slate-900 transition-colors">
+        <span class="material-symbols-outlined text-[22px]">folder</span>
+        <span data-design-text-token="label-sm" class="font-label text-label-sm font-medium">Files</span>
+      </a>
+
+      <!-- 3. Device -->
+      <a href="../storage-analyzer/StorageAnalyzer.html" class="flex flex-col items-center gap-0.5 px-3 py-1 rounded-full text-slate-600 hover:text-slate-900 transition-colors">
+        <span class="material-symbols-outlined text-[22px]">smartphone</span>
+        <span data-design-text-token="label-sm" class="font-label text-label-sm font-medium">Device</span>
+      </a>
+
+      <!-- 4. Tools -->
+      <a href="../storage-analyzer/StorageAnalyzer.html" class="flex flex-col items-center gap-0.5 px-3 py-1 rounded-full text-slate-600 hover:text-slate-900 transition-colors">
+        <span class="material-symbols-outlined text-[22px]">build</span>
+        <span data-design-text-token="label-sm" class="font-label text-label-sm font-medium">Tools</span>
+      </a>
+
+      <!-- 5. Settings -->
+      <a href="#" class="flex flex-col items-center gap-0.5 px-3 py-1 rounded-full text-slate-600 hover:text-slate-900 transition-colors">
+        <span class="material-symbols-outlined text-[22px]">settings</span>
+        <span data-design-text-token="label-sm" class="font-label text-label-sm font-medium">Settings</span>
+      </a>
+    </div>
+  </nav>
+
+  <!-- iOS Gesture Bar -->
+  <div class="fixed bottom-1.5 left-1/2 -translate-x-1/2 w-32 h-1 bg-slate-900/30 rounded-full pointer-events-none z-50"></div>
+
+
+
+</body></html>

@@ -1,0 +1,269 @@
+PROJECT: NEXUS FILES — NEXT-GENERATION ANDROID FILE MANAGER
+
+Act as a world-class Apple-level UI/UX designer, motion designer, and Android product designer.
+
+Design an ultra-premium, futuristic Android file manager with the visual quality of iOS 26, Apple's Liquid Glass aesthetic, and the functionality of a professional desktop file explorer.
+
+The app should feel like a premium operating system experience, not a typical Android file manager.
+
+1. DESIGN PHILOSOPHY
+
+Create a unique visual identity combining:
+
+- iOS 26 Liquid Glass visual language.
+- Translucent floating glass panels.
+- Realistic background blur and glass refraction.
+- Soft ambient lighting and subtle reflections.
+- Layered depth and floating UI elements.
+- Ultra-smooth spring-based transitions.
+- Premium minimalism.
+- Beautiful typography and spacing.
+
+Avoid generic Material Design layouts and ordinary file-manager templates.
+
+2. COLOR SYSTEM
+
+Create a complete adaptive design system.
+
+Dark mode:
+
+- Deep AMOLED black background.
+- Translucent charcoal glass surfaces.
+- Frosted white glass highlights.
+- Subtle silver borders.
+- Electric blue and violet accent colors.
+
+Light mode:
+
+- Soft white backgrounds.
+- Milky translucent glass surfaces.
+- Delicate shadows.
+- Subtle grey borders.
+
+Support:
+
+- AMOLED True Black mode.
+- Automatic system theme.
+- Light mode.
+- Dark mode.
+- Custom accent colors.
+
+3. HOME DASHBOARD
+
+Design an exceptional home screen.
+
+Top section:
+
+- Greeting: "Good evening"
+- Large title: "My Files"
+- Profile avatar.
+- Search button.
+- Notification indicator.
+
+Storage card:
+
+- Beautiful floating Liquid Glass card.
+- Circular animated storage visualization.
+- Total storage.
+- Used storage.
+- Available storage.
+- Internal storage and SD card.
+- Smooth animated storage progress.
+
+Quick access:
+
+- Recent Files.
+- Images.
+- Videos.
+- Audio.
+- Documents.
+- Downloads.
+- APK Files.
+- Archives.
+
+Categories should have premium custom icons, beautiful gradients and subtle 3D depth.
+
+4. FILE BROWSER
+
+Create a sophisticated file explorer.
+
+Features:
+
+- Grid view.
+- List view.
+- Compact view.
+- Folder thumbnails.
+- File type icons.
+- File size and modification date.
+- Breadcrumb navigation.
+- Sort by name, size, date and type.
+- Ascending and descending order.
+- Multi-select files.
+- Selection toolbar.
+- Context menu.
+- Hidden files toggle.
+- Favorites.
+- Recent files.
+- Search and filtering.
+
+Use beautiful floating glass menus and contextual controls.
+
+5. FILE PREVIEW EXPERIENCE
+
+Create dedicated premium preview screens for:
+
+- Images with pinch-to-zoom.
+- Videos with playback controls.
+- Audio files with waveform visualization.
+- PDF documents.
+- Text files.
+- APK information.
+- ZIP and RAR archives.
+
+Every preview should have a consistent premium design.
+
+6. ADVANCED FEATURES
+
+Design screens and components for:
+
+- Internal storage.
+- External SD card.
+- USB OTG.
+- Cloud storage.
+- Network storage.
+- Trash / Recycle Bin.
+- File transfer.
+- Duplicate file finder.
+- Large file finder.
+- Storage analyzer.
+- Secure folder.
+- File compression and extraction.
+- File sharing.
+- Bookmarks.
+- Recently deleted files.
+
+7. LIQUID GLASS ANIMATIONS
+
+Animations are a major priority.
+
+Create:
+
+- Smooth spring-based navigation.
+- Shared-element folder transitions.
+- Fluid screen transitions.
+- Morphing icons.
+- Animated storage rings.
+- Glass card expansion.
+- Smooth bottom sheet presentation.
+- Floating toolbar animations.
+- Parallax depth effects.
+- Subtle background blur transitions.
+- Natural touch feedback.
+- Animated loading skeletons.
+- Beautiful empty states.
+
+Animation quality should feel comparable to a premium Apple operating system.
+
+Do not make animations distracting or slow.
+
+8. NAVIGATION
+
+Create an elegant floating bottom navigation bar with five sections:
+
+1. Home
+2. Browse
+3. Recent
+4. Favorites
+5. Settings
+
+Use translucent Liquid Glass with a floating appearance.
+
+9. SETTINGS
+
+Design a premium settings interface with:
+
+- Appearance and themes.
+- AMOLED True Black.
+- Accent color selection.
+- Animation intensity.
+- Grid size.
+- Default file view.
+- File sorting.
+- Hidden files.
+- Storage permissions.
+- Privacy and security.
+- About application.
+
+10. REQUIRED SCREENS
+
+Generate all these screens with a consistent design system:
+
+1. Home dashboard.
+2. Internal storage overview.
+3. Folder browsing.
+4. Grid file view.
+5. List file view.
+6. Recent files.
+7. Favorites.
+8. Global search.
+9. Image preview.
+10. Video preview.
+11. PDF preview.
+12. Audio player.
+13. File details.
+14. Context menu.
+15. Multi-selection mode.
+16. Storage analyzer.
+17. File transfer.
+18. Trash.
+19. Secure folder.
+20. Settings.
+21. Theme customization.
+22. USB OTG browser.
+23. SD card browser.
+24. Cloud storage.
+
+11. DESIGN QUALITY RULES
+
+- Use a consistent 8-point spacing system.
+- Use carefully balanced typography.
+- Maintain excellent visual hierarchy.
+- Create realistic file and folder thumbnails.
+- Use high-quality custom icons.
+- Avoid clutter.
+- Avoid excessive gradients.
+- Avoid excessive glass blur.
+- Ensure text remains readable over glass surfaces.
+- Make every screen feel like part of the same premium application.
+- Design for modern Android smartphones, including 360–430 dp screen widths.
+- Respect Android status bar, navigation gestures and safe areas.
+
+12. PROTOTYPE REQUIREMENTS
+
+Connect all screens into a clickable interactive prototype.
+
+Demonstrate:
+
+- Home to internal storage.
+- Internal storage to folder.
+- Folder to file preview.
+- Long press to selection mode.
+- Search to search results.
+- Settings to theme customization.
+- Bottom navigation between all five sections.
+
+Make controls visually and functionally understandable.
+
+FINAL CREATIVE DIRECTION
+
+The final result should look like a premium fusion of:
+
+Apple Files + iOS 26 Liquid Glass + a professional desktop file manager.
+
+Do not copy Apple's exact interface or assets. Create an original brand identity.
+
+Prioritize visual excellence, fluid motion, sophisticated glass materials, usability and consistency.
+
+The result must look like a next-generation premium Android application that could compete with the best file managers in the world.
+
+Start by generating the complete design system and all core screens. Then create the remaining screens while preserving the exact same visual language.

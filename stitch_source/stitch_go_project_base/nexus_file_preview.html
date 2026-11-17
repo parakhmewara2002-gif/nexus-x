@@ -1,0 +1,307 @@
+<!DOCTYPE html><html lang="en"><head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NEXUS X — File Preview</title>
+  <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+  <script id="tailwind-config">/** @type {import('tailwindcss').Config} */
+globalThis.tailwind = globalThis.tailwind || {};
+globalThis.tailwind.config = {
+  darkMode: 'class',
+  theme: {
+    extend: {
+      colors: {
+        'accent': '#0EA5E9',
+        'accent-glow': 'rgba(14, 165, 233, 0.35)',
+        'lavender': '#8B5CF6',
+        'cyan': '#06B6D4',
+        'success': '#10B981',
+        'warning': '#F59E0B',
+        'danger': '#EF4444',
+        'light-primary': '#0284C7',
+        'light-on-primary': '#131313',
+        'light-secondary': '#7C3AED',
+        'light-on-secondary': '#FFFFFF',
+        'light-surface': '#F0F4F9',
+        'light-on-surface': '#0F172A',
+        'light-surface-container-low': '#FFFFFF',
+        'light-surface-container': 'rgba(255, 255, 255, 0.68)',
+        'light-surface-container-high': 'rgba(255, 255, 255, 0.88)',
+        'light-surface-glass': 'rgba(255, 255, 255, 0.65)',
+        'light-surface-glass-border': 'rgba(255, 255, 255, 0.75)',
+        'light-outline': '#64748B',
+        'light-outline-variant': 'rgba(203, 213, 225, 0.6)',
+        'dark-primary': '#38BDF8',
+        'dark-on-primary': '#082F49',
+        'dark-secondary': '#C084FC',
+        'dark-on-secondary': '#3B0764',
+        'dark-surface': '#0F172A',
+        'dark-on-surface': '#F8FAFC',
+        'dark-surface-container-low': '#1E293B',
+        'dark-surface-container': '#334155',
+        'dark-surface-container-high': '#475569',
+        'dark-surface-glass': 'rgba(30, 41, 59, 0.7)',
+        'dark-surface-glass-border': 'rgba(255, 255, 255, 0.15)',
+        'dark-outline': '#94A3B8',
+        'dark-outline-variant': '#334155',
+      },
+      borderRadius: {
+        'sm': '8px',
+        'DEFAULT': '14px',
+        'md': '18px',
+        'lg': '24px',
+        'xl': '32px',
+        'full': '9999px',
+      },
+      spacing: {
+        'gutter-xs': '4px',
+        'gutter-sm': '8px',
+        'gutter-md': '12px',
+        'gutter-lg': '16px',
+        'gutter-xl': '24px',
+        'section': '32px',
+        'page-margin': '20px',
+        'nav-dock-height': '72px',
+      },
+      fontFamily: {
+        'display': ['"Plus Jakarta Sans"', 'sans-serif'],
+        'headline': ['"Plus Jakarta Sans"', 'sans-serif'],
+        'body': ['"Instrument Sans"', 'sans-serif'],
+        'label': ['"Plus Jakarta Sans"', 'sans-serif'],
+        'code': ['"Source Code Pro"', 'monospace'],
+      },
+      fontSize: {
+        'display-lg': ['40px', { lineHeight: '48px', letterSpacing: '-0.8px', fontWeight: '700' }],
+        'display-lg-mobile': ['32px', { lineHeight: '38px', letterSpacing: '-0.6px', fontWeight: '700' }],
+        'headline-xl': ['34px', { lineHeight: '42px', letterSpacing: '-0.5px', fontWeight: '700' }],
+        'headline-xl-mobile': ['28px', { lineHeight: '34px', letterSpacing: '-0.4px', fontWeight: '700' }],
+        'headline-lg': ['26px', { lineHeight: '32px', letterSpacing: '-0.3px', fontWeight: '600' }],
+        'headline-lg-mobile': ['22px', { lineHeight: '28px', letterSpacing: '-0.2px', fontWeight: '600' }],
+        'headline-md': ['18px', { lineHeight: '24px', letterSpacing: '-0.1px', fontWeight: '600' }],
+        'headline-sm': ['16px', { lineHeight: '22px', letterSpacing: '0px', fontWeight: '600' }],
+        'body-lg': ['16px', { lineHeight: '24px', letterSpacing: '0px', fontWeight: '400' }],
+        'body-md': ['14px', { lineHeight: '20px', letterSpacing: '0px', fontWeight: '400' }],
+        'body-sm': ['12px', { lineHeight: '16px', letterSpacing: '0.1px', fontWeight: '400' }],
+        'label-lg': ['14px', { lineHeight: '20px', letterSpacing: '0.1px', fontWeight: '600' }],
+        'label-md': ['12px', { lineHeight: '16px', letterSpacing: '0.2px', fontWeight: '500' }],
+        'label-sm': ['11px', { lineHeight: '14px', letterSpacing: '0.3px', fontWeight: '500' }],
+        'code-md': ['13px', { lineHeight: '18px', letterSpacing: '0px', fontWeight: '500' }],
+        'code-sm': ['11px', { lineHeight: '14px', letterSpacing: '0px', fontWeight: '500' }],
+      },
+      transitionDuration: {
+        'state-change': '140ms',
+        'card-spring': '320ms',
+        'sheet-slide': '380ms',
+      },
+      transitionDelay: {
+        'state-change': '0ms',
+        'card-spring': '0ms',
+        'sheet-slide': '0ms',
+      },
+      transitionTimingFunction: {
+        'state-change': 'cubic-bezier(0.16, 1, 0.3, 1)',
+        'card-spring': 'cubic-bezier(0.34, 1.56, 0.64, 1)',
+        'sheet-slide': 'cubic-bezier(0.16, 1, 0.3, 1)',
+      },
+    },
+  },
+};
+if (typeof module !== 'undefined') module.exports = globalThis.tailwind.config;
+</script>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700&amp;family=Instrument+Sans:wght@400;500;600&amp;family=Source+Code+Pro:wght@500;600&amp;display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=block" rel="stylesheet">
+  <style>
+    .material-symbols-outlined, .material-symbols-rounded, .material-symbols-sharp, .material-icons {
+      display: inline-block; width: 1em; height: 1em; line-height: 1 !important;
+      box-sizing: content-box; overflow: hidden; white-space: nowrap; direction: ltr; vertical-align: middle;
+    }
+    .liquid-glass {
+      background: rgba(255, 255, 255, 0.68);
+      backdrop-filter: blur(28px);
+      -webkit-backdrop-filter: blur(28px);
+      border: 1px solid rgba(255, 255, 255, 0.85);
+      box-shadow: 0 16px 36px -10px rgba(15, 23, 42, 0.08), inset 0 1px 0 rgba(255, 255, 255, 0.95);
+    }
+    .liquid-glass-subtle {
+      background: rgba(255, 255, 255, 0.52);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid rgba(255, 255, 255, 0.75);
+      box-shadow: 0 8px 24px -6px rgba(15, 23, 42, 0.05), inset 0 1px 0 rgba(255, 255, 255, 0.9);
+    }
+  </style>
+</head>
+<body class="bg-gradient-to-br from-[#E0E7FF] via-[#F3E8FF] to-[#E0F2FE] text-slate-900 font-body antialiased min-h-[884px] relative overflow-x-hidden flex flex-col justify-between pb-12" data-stitch-vh="min-h-[884px]===min-h-screen">
+
+  <!-- Ambient Light Mesh Wallpaper -->
+  <div class="fixed top-[-60px] left-[-60px] w-96 h-96 bg-gradient-to-br from-sky-300/40 via-cyan-200/30 to-transparent rounded-full blur-[85px] pointer-events-none -z-10"></div>
+  <div class="fixed bottom-[80px] right-[-80px] w-80 h-80 bg-gradient-to-tl from-purple-300/35 via-pink-200/25 to-transparent rounded-full blur-[85px] pointer-events-none -z-10"></div>
+
+  <!-- iOS 26 Status Bar -->
+  <div class="sticky top-0 z-40 px-7 pt-3.5 pb-2 flex items-center justify-between text-slate-700 font-label text-label-sm backdrop-blur-md bg-white/20">
+    <span class="font-code text-code-sm font-semibold text-slate-900">09:44</span>
+    <div class="w-24 h-5 rounded-full bg-slate-900/90 shadow-inner flex items-center justify-between px-2 text-[10px] text-white">
+      <span class="w-1.5 h-1.5 rounded-full bg-rose-400"></span>
+      <span class="font-code text-[9px] tracking-wider text-slate-300">MEDIA</span>
+    </div>
+    <div class="flex items-center gap-1.5 text-slate-800">
+      <span class="material-symbols-outlined text-[16px]">signal_cellular_4_bar</span>
+      <span class="material-symbols-outlined text-[16px]">wifi</span>
+      <span class="material-symbols-outlined text-[18px]">battery_charging_90</span>
+    </div>
+  </div>
+
+  <!-- Contextual Top Bar -->
+  <header class="px-5 pt-2 flex items-center justify-between">
+    <div class="flex items-center gap-3">
+      <a href="../file-browser/FileBrowser.html" aria-label="Close preview" class="w-10 h-10 rounded-full liquid-glass flex items-center justify-center text-slate-700 hover:text-sky-600 active:scale-95 transition-all">
+        <span class="material-symbols-outlined text-[20px]">close</span>
+      </a>
+      <div class="min-w-0 max-w-[200px]">
+        <h1 data-design-text-token="label-lg" class="font-label text-label-lg font-bold text-slate-900 truncate">
+          Cinematic_Trailer_4K.mp4
+        </h1>
+        <p class="font-code text-[11px] text-sky-600 truncate font-semibold">1.84 GB • H.265 60fps</p>
+      </div>
+    </div>
+    <div class="flex items-center gap-2">
+      <button type="button" aria-label="Favorite item" class="w-10 h-10 rounded-full liquid-glass flex items-center justify-center text-amber-500 active:scale-95 transition-all">
+        <span class="material-symbols-outlined text-[20px]" style="font-variation-settings: &#39;FILL&#39; 1;">star</span>
+      </button>
+      <button type="button" aria-label="More actions" class="w-10 h-10 rounded-full liquid-glass flex items-center justify-center text-slate-700 active:scale-95 transition-all">
+        <span class="material-symbols-outlined text-[20px]">more_vert</span>
+      </button>
+    </div>
+  </header>
+
+  <!-- Interactive Media Stage -->
+  <main class="px-5 py-4 flex-1 flex flex-col justify-center space-y-5">
+
+    <!-- Video Viewport / Holographic Glass Player with Luminous Light Diffusion -->
+    <div class="relative w-full aspect-video rounded-3xl overflow-hidden liquid-glass flex items-center justify-center group shadow-xl">
+      <!-- Simulated High-Definition Video Canvas / Gradient Glow -->
+      <div class="absolute inset-0 bg-gradient-to-tr from-sky-900 via-indigo-900 to-slate-950 flex items-center justify-center">
+        <div class="w-full h-full opacity-30 bg-[radial-gradient(#38BDF8_1px,transparent_1px)] [background-size:16px_16px]"></div>
+      </div>
+
+      <!-- Playback Center Trigger with Ripple Pulse -->
+      <!-- COMPONENT: button-icon -->
+      <button data-component-id="button-icon" data-component-type="button" data-component-variant="icon" type="button" aria-label="Play video" class="relative z-10 w-16 h-16 rounded-full bg-white/85 text-slate-900 flex items-center justify-center shadow-2xl hover:scale-105 active:scale-95 transition-all hover:text-sky-600 border border-white">
+        <span class="material-symbols-outlined text-[36px] ml-1" style="font-variation-settings: &#39;FILL&#39; 1;">play_arrow</span>
+      </button>
+
+      <!-- Resolution Badge -->
+      <div class="absolute top-3.5 left-3.5 px-3 py-1 rounded-full bg-white/75 border border-white backdrop-blur-md text-[11px] font-code text-sky-700 font-bold shadow-sm">
+        4K UHD • HDR10+
+      </div>
+
+      <!-- Timecode Remaining -->
+      <div class="absolute bottom-3.5 right-3.5 px-3 py-1 rounded-full bg-slate-900/70 text-white backdrop-blur-md text-[11px] font-code">
+        01:42 / 03:15
+      </div>
+    </div>
+
+    <!-- Scrubber & Controls -->
+    <div class="liquid-glass-subtle rounded-3xl p-4.5 space-y-3">
+      <div class="flex items-center justify-between text-body-sm text-slate-600 font-code font-medium">
+        <span>01:42</span>
+        <span class="text-sky-600 font-bold">52% Streamed</span>
+        <span>-01:33</span>
+      </div>
+
+      <!-- Track Bar -->
+      <div class="relative w-full h-2.5 bg-slate-200/80 rounded-full overflow-hidden cursor-pointer border border-white">
+        <div class="h-full bg-gradient-to-r from-sky-400 via-blue-500 to-indigo-500 rounded-full" style="width: 52%;"></div>
+      </div>
+
+      <!-- Quick Media Actions Row -->
+      <div class="flex items-center justify-around pt-1 text-slate-600 font-medium">
+        <button type="button" class="flex flex-col items-center gap-1 hover:text-slate-900 text-label-sm font-label">
+          <span class="material-symbols-outlined text-[20px]">replay_10</span>
+          <span>-10s</span>
+        </button>
+        <button type="button" class="flex flex-col items-center gap-1 hover:text-slate-900 text-label-sm font-label">
+          <span class="material-symbols-outlined text-[20px]">fullscreen</span>
+          <span>Fullscreen</span>
+        </button>
+        <button type="button" class="flex flex-col items-center gap-1 hover:text-slate-900 text-label-sm font-label">
+          <span class="material-symbols-outlined text-[20px]">forward_10</span>
+          <span>+10s</span>
+        </button>
+        <button type="button" class="flex flex-col items-center gap-1 hover:text-slate-900 text-label-sm font-label">
+          <span class="material-symbols-outlined text-[20px]">speed</span>
+          <span>1.0x</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Desktop-Grade File Metadata Card (Light Liquid Glass) -->
+    <!-- COMPONENT: card-elevated -->
+    <article data-component-id="card-elevated" data-component-type="card" data-component-variant="elevated" class="liquid-glass rounded-3xl p-5 space-y-3">
+      <div class="flex items-center justify-between border-b border-slate-200/70 pb-2">
+        <h2 data-design-text-token="label-lg" class="font-label text-label-lg font-bold text-slate-900 flex items-center gap-2">
+          <span class="material-symbols-outlined text-[20px] text-sky-600">info</span>
+          File Specifications
+        </h2>
+        <span class="font-code text-code-sm text-slate-500">Read / Write</span>
+      </div>
+
+      <div class="grid grid-cols-2 gap-y-2.5 text-body-sm">
+        <div>
+          <span class="text-slate-500 text-[12px] block">Location:</span>
+          <span class="font-code text-[11px] text-slate-800 truncate block font-medium">/Internal/Nexus_Projects/</span>
+        </div>
+        <div>
+          <span class="text-slate-500 text-[12px] block">Size on Disk:</span>
+          <span class="font-code text-code-sm font-bold text-slate-900">1,842,108,416 B</span>
+        </div>
+        <div>
+          <span class="text-slate-500 text-[12px] block">Codec:</span>
+          <span class="font-code text-code-sm text-slate-800 font-medium">HEVC Main 10 @ L5.1</span>
+        </div>
+        <div>
+          <span class="text-slate-500 text-[12px] block">Audio Stream:</span>
+          <span class="font-code text-code-sm text-slate-800 font-medium">Dolby Atmos (E-AC-3)</span>
+        </div>
+        <div>
+          <span class="text-slate-500 text-[12px] block">Modified:</span>
+          <span class="font-body text-body-sm text-slate-800 font-medium">Today, Nov 17 • 14:20</span>
+        </div>
+        <div>
+          <span class="text-slate-500 text-[12px] block">SHA-256 Checksum:</span>
+          <span class="font-code text-[11px] text-purple-600 font-semibold">8f3b...9e1a</span>
+        </div>
+      </div>
+    </article>
+
+  </main>
+
+  <!-- Bottom Floating Action Toolbar (Share / Cast / Delete) -->
+  <footer class="px-5 pt-2">
+    <div class="liquid-glass rounded-full p-2 flex items-center justify-between shadow-xl">
+      <!-- COMPONENT: button-with-icon -->
+      <button data-component-id="button-with-icon" data-component-type="button" data-component-variant="with-icon" type="button" class="flex-1 inline-flex items-center justify-center gap-1.5 py-2.5 rounded-full text-slate-800 hover:bg-white/80 transition-colors font-label text-label-sm font-semibold">
+        <span class="material-symbols-outlined text-[18px] text-sky-600">share</span>
+        <span>Quick Share</span>
+      </button>
+
+      <div class="w-[1px] h-6 bg-slate-200"></div>
+
+      <button type="button" class="flex-1 inline-flex items-center justify-center gap-1.5 py-2.5 rounded-full text-slate-800 hover:bg-white/80 transition-colors font-label text-label-sm font-semibold">
+        <span class="material-symbols-outlined text-[18px] text-purple-600">cast</span>
+        <span>Cast to Screen</span>
+      </button>
+
+      <div class="w-[1px] h-6 bg-slate-200"></div>
+
+      <button type="button" class="px-4 py-2.5 rounded-full text-rose-500 hover:bg-rose-50 transition-colors" aria-label="Delete file">
+        <span class="material-symbols-outlined text-[20px]">delete</span>
+      </button>
+    </div>
+  </footer>
+
+  <!-- iOS Gesture Bar -->
+  <div class="fixed bottom-1.5 left-1/2 -translate-x-1/2 w-32 h-1 bg-slate-900/30 rounded-full pointer-events-none z-50"></div>
+
+
+
+</body></html>
