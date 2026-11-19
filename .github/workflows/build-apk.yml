@@ -20,7 +20,12 @@ jobs:
           java-version: 17
       - uses: gradle/actions/setup-gradle@v4
       - run: chmod +x gradlew
-      - run: ./gradlew testDebugUnitTest assembleDebug --no-daemon
+      - name: Build
+        run: set -o pipefail; ./gradlew testDebugUnitTest assembleDebug --no-daemon 2>&1 | tee build.log
+      - name: Surface compile errors as annotations
+        if: failure()
+        run: |
+          grep -E '^e: |error:|What went wrong|FAILED' build.log | head -10 | while IFS= read -r l; do echo "::error::${l:0:400}"; done
       - uses: actions/upload-artifact@v4
         with:
           name: nexus-x-debug-apk
