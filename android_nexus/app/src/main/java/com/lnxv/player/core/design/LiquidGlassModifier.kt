@@ -278,9 +278,16 @@ fun Modifier.liquidGlassSurface(
 ): Modifier = composed {
     val backdrop = LocalLiquidBackdrop.current
     val quality = LocalLiquidQuality.current
+    // LITE (default): live refraction only on small, static elements (buttons). Cards / panels / rows
+    // that scroll stay on the cheap translucent look, so lists don't lag. FULL = everything.
+    val allowed = when (quality) {
+        LiquidQuality.FULL -> true
+        LiquidQuality.LITE -> kind == GlassKind.Button
+        LiquidQuality.OFF -> false
+    }
     val active = backdrop != null &&
+        allowed &&
         LiquidGlassSupport.tier != LiquidTier.FLAT &&
-        quality != LiquidQuality.OFF &&
         backdrop.hostView === LocalView.current
 
     if (active) {

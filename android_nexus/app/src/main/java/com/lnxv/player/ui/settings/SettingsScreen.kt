@@ -39,7 +39,7 @@ fun SettingsScreen(
 
     val userPrefs by app.dataStore.userPreferencesFlow.collectAsState(initial = null)
     val currentTheme = userPrefs?.themeMode ?: "OBSIDIAN"
-    val currentLiquid = userPrefs?.liquidGlassQuality ?: "FULL"
+    val currentLiquid = userPrefs?.liquidGlassQuality ?: "LITE"
 
     var showHiddenFiles by remember { mutableStateOf(false) }
     var hardwareAcceleration by remember { mutableStateOf(true) }
@@ -142,13 +142,18 @@ fun SettingsScreen(
                                     text = "Check for GitHub Updates",
                                     fontWeight = FontWeight.Bold,
                                     fontSize = 15.sp,
-                                    color = AppColors.textPrimary
+                                    color = AppColors.textPrimary,
+                                    maxLines = 1,
+                                    overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis,
+                                    modifier = Modifier.weight(1f, fill = false)
                                 )
                                 GlassBadge(text = "v1.0.1", color = PrimarySkyBlue)
                             }
                             Text(
                                 text = "Secure in-app OTA binary checking directly via GitHub Releases",
                                 fontSize = 11.sp,
+                                lineHeight = 15.sp,
+                                maxLines = 2,
                                 color = AppColors.textMuted
                             )
                         }
@@ -239,7 +244,7 @@ fun SettingsScreen(
 
                         ThemeOptionRow(
                             title = "Full",
-                            subtitle = "Refraction, chromatic edges and frosted blur (Android 13+ for refraction)",
+                            subtitle = "Glass on cards and panels too. Prettiest, but can lag while scrolling",
                             isSelected = currentLiquid == "FULL",
                             onClick = {
                                 scope.launch { app.dataStore.updateLiquidGlassQuality("FULL") }
@@ -250,7 +255,7 @@ fun SettingsScreen(
 
                         ThemeOptionRow(
                             title = "Lite",
-                            subtitle = "Softer refraction, no colour fringing, cheaper blur",
+                            subtitle = "Recommended: glass dock and buttons, smooth scrolling",
                             isSelected = currentLiquid == "LITE",
                             onClick = {
                                 scope.launch { app.dataStore.updateLiquidGlassQuality("LITE") }

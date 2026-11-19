@@ -388,7 +388,9 @@ fun GlassBadge(
             text = text,
             color = color,
             fontSize = 11.sp,
-            style = Typography.labelSmall
+            style = Typography.labelSmall,
+            maxLines = 1,
+            softWrap = false
         )
     }
 }

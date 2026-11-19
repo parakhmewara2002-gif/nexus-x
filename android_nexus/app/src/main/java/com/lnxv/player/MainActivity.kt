@@ -67,7 +67,7 @@ class MainActivity : ComponentActivity() {
             LNXVTheme(themeMode = prefs.themeMode, darkTheme = prefs.isDarkMode, amoled = prefs.isAmoled) {
                 val navController = rememberNavController()
                 val liquidQuality = runCatching { LiquidQuality.valueOf(prefs.liquidGlassQuality) }
-                    .getOrDefault(LiquidQuality.FULL)
+                    .getOrDefault(LiquidQuality.LITE)
                 CompositionLocalProvider(LocalLiquidQuality provides liquidQuality) {
                     LNXVNavigationHost(navController = navController)
                 }

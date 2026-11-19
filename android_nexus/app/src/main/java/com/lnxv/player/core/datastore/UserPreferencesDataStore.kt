@@ -23,7 +23,7 @@ data class UserPreferences(
     val isDarkMode: Boolean = true,
     val isAmoled: Boolean = false,
     val glassBlurIntensity: Float = 16f,
-    val liquidGlassQuality: String = "FULL", // "FULL", "LITE", "OFF"
+    val liquidGlassQuality: String = "LITE", // "FULL", "LITE", "OFF"
     val defaultSpeed: Float = 1.0f,
     val defaultAspectRatio: String = "FIT",
     val doubleTapSeekSeconds: Int = 10,
@@ -79,7 +79,7 @@ class UserPreferencesDataStore(private val context: Context) {
             isDarkMode = rawTheme != "LIGHT_GLASS",
             isAmoled = rawTheme == "AMOLED",
             glassBlurIntensity = prefs[PreferencesKeys.GLASS_BLUR] ?: 16f,
-            liquidGlassQuality = prefs[PreferencesKeys.LIQUID_QUALITY] ?: "FULL",
+            liquidGlassQuality = prefs[PreferencesKeys.LIQUID_QUALITY] ?: "LITE",
             defaultSpeed = prefs[PreferencesKeys.DEFAULT_SPEED] ?: 1.0f,
             defaultAspectRatio = prefs[PreferencesKeys.DEFAULT_ASPECT_RATIO] ?: "FIT",
             doubleTapSeekSeconds = prefs[PreferencesKeys.DOUBLE_TAP_SEEK] ?: 10,
