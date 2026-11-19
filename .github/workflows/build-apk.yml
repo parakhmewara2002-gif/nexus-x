@@ -25,7 +25,8 @@ jobs:
       - name: Surface compile errors as annotations
         if: failure()
         run: |
-          grep -E '^e: |error:|What went wrong|FAILED' build.log | head -10 | while IFS= read -r l; do echo "::error::${l:0:400}"; done
+          awk '/What went wrong/{f=1} f{print} /\* Try/{exit}' build.log | head -12 | tr '\n' ' ' | cut -c1-900 | while IFS= read -r l; do echo "::error::$l"; done
+          grep -E '^e: ' build.log | head -9 | while IFS= read -r l; do echo "::error::${l:0:400}"; done
       - uses: actions/upload-artifact@v4
         with:
           name: nexus-x-debug-apk
