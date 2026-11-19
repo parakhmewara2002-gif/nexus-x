@@ -23,6 +23,7 @@ data class UserPreferences(
     val isDarkMode: Boolean = true,
     val isAmoled: Boolean = false,
     val glassBlurIntensity: Float = 16f,
+    val liquidGlassQuality: String = "FULL", // "FULL", "LITE", "OFF"
     val defaultSpeed: Float = 1.0f,
     val defaultAspectRatio: String = "FIT",
     val doubleTapSeekSeconds: Int = 10,
@@ -50,6 +51,7 @@ class UserPreferencesDataStore(private val context: Context) {
         val DARK_MODE = booleanPreferencesKey("dark_mode")
         val AMOLED = booleanPreferencesKey("amoled")
         val GLASS_BLUR = floatPreferencesKey("glass_blur")
+        val LIQUID_QUALITY = stringPreferencesKey("liquid_glass_quality")
         val DEFAULT_SPEED = floatPreferencesKey("default_speed")
         val DEFAULT_ASPECT_RATIO = stringPreferencesKey("default_aspect_ratio")
         val DOUBLE_TAP_SEEK = intPreferencesKey("double_tap_seek")
@@ -77,6 +79,7 @@ class UserPreferencesDataStore(private val context: Context) {
             isDarkMode = rawTheme != "LIGHT_GLASS",
             isAmoled = rawTheme == "AMOLED",
             glassBlurIntensity = prefs[PreferencesKeys.GLASS_BLUR] ?: 16f,
+            liquidGlassQuality = prefs[PreferencesKeys.LIQUID_QUALITY] ?: "FULL",
             defaultSpeed = prefs[PreferencesKeys.DEFAULT_SPEED] ?: 1.0f,
             defaultAspectRatio = prefs[PreferencesKeys.DEFAULT_ASPECT_RATIO] ?: "FIT",
             doubleTapSeekSeconds = prefs[PreferencesKeys.DOUBLE_TAP_SEEK] ?: 10,
@@ -116,6 +119,10 @@ class UserPreferencesDataStore(private val context: Context) {
 
     suspend fun updateGlassBlur(blur: Float) {
         context.dataStore.edit { it[PreferencesKeys.GLASS_BLUR] = blur }
+    }
+
+    suspend fun updateLiquidGlassQuality(quality: String) {
+        context.dataStore.edit { it[PreferencesKeys.LIQUID_QUALITY] = quality }
     }
 
     suspend fun updateDefaultSpeed(speed: Float) {

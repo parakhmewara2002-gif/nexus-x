@@ -16,6 +16,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -30,40 +31,6 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-
-/**
- * iOS 26 Light Liquid Glass Surface
- * Hardware-accelerated translucency, dual specular border reflection and elevation.
- */
-fun Modifier.liquidGlassSurface(
-    shape: Shape = RoundedCornerShape(20.dp),
-    backgroundColor: Color = GlassWhiteMedium,
-    borderColor: Color = GlassWhiteBorder,
-    borderWidth: Dp = 1.dp
-): Modifier = this
-    .clip(shape)
-    .background(
-        brush = Brush.verticalGradient(
-            colors = listOf(
-                backgroundColor.copy(alpha = (backgroundColor.alpha * 1.10f).coerceAtMost(1f)),
-                backgroundColor.copy(alpha = (backgroundColor.alpha * 0.92f).coerceAtLeast(0f))
-            )
-        ),
-        shape = shape
-    )
-    .border(
-        width = borderWidth,
-        brush = Brush.linearGradient(
-            colors = listOf(
-                borderColor,
-                borderColor.copy(alpha = 0.25f),
-                borderColor.copy(alpha = 0.70f)
-            ),
-            start = Offset.Zero,
-            end = Offset.Infinite
-        ),
-        shape = shape
-    )
 
 /**
  * Ambient background layer providing subtle pastel mesh glows underneath glass panels
@@ -82,68 +49,101 @@ fun AmbientGlassBackground(
         else -> LightSurface
     }
 
-    Box(
-        modifier = modifier
-            .fillMaxSize()
-            .background(baseBgColor)
-    ) {
-        if (!isObsidian && !isDark) {
-            // Top-right sky ambient circle
-            Box(
-                modifier = Modifier
-                    .align(Alignment.TopEnd)
-                    .offset(x = 60.dp, y = (-50).dp)
-                    .size(340.dp)
-                    .background(
-                        brush = Brush.radialGradient(
-                            colors = listOf(Color(0x38BAE6FD), Color(0x10A5F3FC), Color.Transparent)
-                        ),
-                        shape = CircleShape
-                    )
-            )
-            // Mid-left lavender ambient circle
-            Box(
-                modifier = Modifier
-                    .align(Alignment.CenterStart)
-                    .offset(x = (-80).dp, y = (-40).dp)
-                    .size(360.dp)
-                    .background(
-                        brush = Brush.radialGradient(
-                            colors = listOf(Color(0x30DDD6FE), Color(0x0FFBCFE8), Color.Transparent)
-                        ),
-                        shape = CircleShape
-                    )
-            )
-            // Bottom-right indigo/cyan glow
-            Box(
-                modifier = Modifier
-                    .align(Alignment.BottomEnd)
-                    .offset(x = 50.dp, y = 60.dp)
-                    .size(320.dp)
-                    .background(
-                        brush = Brush.radialGradient(
-                            colors = listOf(Color(0x28BAE6FD), Color(0x0EC7D2FE), Color.Transparent)
-                        ),
-                        shape = CircleShape
-                    )
-            )
-        } else if (isObsidian) {
-            // Subtle dark mesh highlight in Obsidian mode
-            Box(
-                modifier = Modifier
-                    .align(Alignment.TopEnd)
-                    .offset(x = 100.dp, y = (-80).dp)
-                    .size(400.dp)
-                    .background(
-                        brush = Brush.radialGradient(
-                            colors = listOf(Color(0x14FFFFFF), Color.Transparent)
-                        ),
-                        shape = CircleShape
-                    )
-            )
+    // Everything drawn inside the source box is what Liquid Glass panels refract.
+    // `content` is a SIBLING of the source so glass never samples itself.
+    val backdrop = rememberLiquidBackdrop()
+
+    Box(modifier = modifier.fillMaxSize()) {
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .liquidBackdropSource(backdrop)
+                .background(baseBgColor)
+        ) {
+            if (!isObsidian && !isDark) {
+                // Top-right sky ambient circle
+                Box(
+                    modifier = Modifier
+                        .align(Alignment.TopEnd)
+                        .offset(x = 60.dp, y = (-50).dp)
+                        .size(340.dp)
+                        .background(
+                            brush = Brush.radialGradient(
+                                colors = listOf(Color(0x66BAE6FD), Color(0x1AA5F3FC), Color.Transparent)
+                            ),
+                            shape = CircleShape
+                        )
+                )
+                // Mid-left lavender ambient circle
+                Box(
+                    modifier = Modifier
+                        .align(Alignment.CenterStart)
+                        .offset(x = (-80).dp, y = (-40).dp)
+                        .size(360.dp)
+                        .background(
+                            brush = Brush.radialGradient(
+                                colors = listOf(Color(0x55DDD6FE), Color(0x18FBCFE8), Color.Transparent)
+                            ),
+                            shape = CircleShape
+                        )
+                )
+                // Bottom-right indigo/cyan glow
+                Box(
+                    modifier = Modifier
+                        .align(Alignment.BottomEnd)
+                        .offset(x = 50.dp, y = 60.dp)
+                        .size(320.dp)
+                        .background(
+                            brush = Brush.radialGradient(
+                                colors = listOf(Color(0x50BAE6FD), Color(0x16C7D2FE), Color.Transparent)
+                            ),
+                            shape = CircleShape
+                        )
+                )
+            } else if (isObsidian) {
+                // Obsidian: faint sky + violet glows so the glass has something to bend
+                Box(
+                    modifier = Modifier
+                        .align(Alignment.TopEnd)
+                        .offset(x = 100.dp, y = (-80).dp)
+                        .size(400.dp)
+                        .background(
+                            brush = Brush.radialGradient(
+                                colors = listOf(Color(0x3338BDF8), Color(0x0F38BDF8), Color.Transparent)
+                            ),
+                            shape = CircleShape
+                        )
+                )
+                Box(
+                    modifier = Modifier
+                        .align(Alignment.CenterStart)
+                        .offset(x = (-120).dp, y = 80.dp)
+                        .size(380.dp)
+                        .background(
+                            brush = Brush.radialGradient(
+                                colors = listOf(Color(0x298B5CF6), Color(0x0C8B5CF6), Color.Transparent)
+                            ),
+                            shape = CircleShape
+                        )
+                )
+                Box(
+                    modifier = Modifier
+                        .align(Alignment.BottomEnd)
+                        .offset(x = 70.dp, y = 90.dp)
+                        .size(340.dp)
+                        .background(
+                            brush = Brush.radialGradient(
+                                colors = listOf(Color(0x2606B6D4), Color(0x0A06B6D4), Color.Transparent)
+                            ),
+                            shape = CircleShape
+                        )
+                )
+            }
         }
 
-        content()
+        CompositionLocalProvider(LocalLiquidBackdrop provides backdrop) {
+            content()
+        }
     }
 }
 
@@ -161,7 +161,8 @@ fun GlassPanel(
             shape = shape,
             backgroundColor = backgroundColor,
             borderColor = borderColor,
-            borderWidth = borderWidth
+            borderWidth = borderWidth,
+            kind = GlassKind.Panel
         ),
         content = content
     )
@@ -221,7 +222,8 @@ fun GlassCard(
                 shape = shape,
                 backgroundColor = effectiveBg,
                 borderColor = effectiveBorder,
-                borderWidth = 1.dp
+                borderWidth = 1.dp,
+                kind = GlassKind.Card
             ),
         content = content
     )
@@ -345,12 +347,12 @@ fun GlassIconButton(
         modifier = modifier
             .size(size)
             .scale(scale)
-            .clip(CircleShape)
             .liquidGlassSurface(
                 shape = CircleShape,
                 backgroundColor = effectiveBg,
                 borderColor = effectiveBorder,
-                borderWidth = 1.dp
+                borderWidth = 1.dp,
+                kind = GlassKind.Button
             )
             .clickable(
                 interactionSource = interactionSource,

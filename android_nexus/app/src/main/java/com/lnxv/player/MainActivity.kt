@@ -12,7 +12,10 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.collectAsState
 import androidx.core.content.ContextCompat
 import androidx.navigation.compose.rememberNavController
+import androidx.compose.runtime.CompositionLocalProvider
 import com.lnxv.player.core.design.LNXVTheme
+import com.lnxv.player.core.design.LiquidQuality
+import com.lnxv.player.core.design.LocalLiquidQuality
 import com.lnxv.player.playback.pip.PipManager
 import com.lnxv.player.ui.navigation.LNXVNavigationHost
 import kotlinx.coroutines.CoroutineScope
@@ -63,7 +66,11 @@ class MainActivity : ComponentActivity() {
             val prefs by app.dataStore.userPreferencesFlow.collectAsState(initial = initialPrefs)
             LNXVTheme(themeMode = prefs.themeMode, darkTheme = prefs.isDarkMode, amoled = prefs.isAmoled) {
                 val navController = rememberNavController()
-                LNXVNavigationHost(navController = navController)
+                val liquidQuality = runCatching { LiquidQuality.valueOf(prefs.liquidGlassQuality) }
+                    .getOrDefault(LiquidQuality.FULL)
+                CompositionLocalProvider(LocalLiquidQuality provides liquidQuality) {
+                    LNXVNavigationHost(navController = navController)
+                }
             }
         }
     }

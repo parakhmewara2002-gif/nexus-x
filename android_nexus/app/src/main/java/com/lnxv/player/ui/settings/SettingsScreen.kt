@@ -39,6 +39,7 @@ fun SettingsScreen(
 
     val userPrefs by app.dataStore.userPreferencesFlow.collectAsState(initial = null)
     val currentTheme = userPrefs?.themeMode ?: "OBSIDIAN"
+    val currentLiquid = userPrefs?.liquidGlassQuality ?: "FULL"
 
     var showHiddenFiles by remember { mutableStateOf(false) }
     var hardwareAcceleration by remember { mutableStateOf(true) }
@@ -224,6 +225,46 @@ fun SettingsScreen(
                             isSelected = currentTheme == "AMOLED",
                             onClick = {
                                 scope.launch { app.dataStore.updateThemeMode("AMOLED") }
+                            }
+                        )
+
+                        HorizontalDivider(color = MaterialTheme.colorScheme.outline.copy(alpha = 0.2f))
+
+                        Text(
+                            text = "Liquid Glass Effect",
+                            fontWeight = FontWeight.Bold,
+                            fontSize = 15.sp,
+                            color = MaterialTheme.colorScheme.onBackground
+                        )
+
+                        ThemeOptionRow(
+                            title = "Full",
+                            subtitle = "Refraction, chromatic edges and frosted blur (Android 13+ for refraction)",
+                            isSelected = currentLiquid == "FULL",
+                            onClick = {
+                                scope.launch { app.dataStore.updateLiquidGlassQuality("FULL") }
+                            }
+                        )
+
+                        HorizontalDivider(color = MaterialTheme.colorScheme.outline.copy(alpha = 0.2f))
+
+                        ThemeOptionRow(
+                            title = "Lite",
+                            subtitle = "Softer refraction, no colour fringing, cheaper blur",
+                            isSelected = currentLiquid == "LITE",
+                            onClick = {
+                                scope.launch { app.dataStore.updateLiquidGlassQuality("LITE") }
+                            }
+                        )
+
+                        HorizontalDivider(color = MaterialTheme.colorScheme.outline.copy(alpha = 0.2f))
+
+                        ThemeOptionRow(
+                            title = "Off",
+                            subtitle = "Classic translucent panels, best battery and performance",
+                            isSelected = currentLiquid == "OFF",
+                            onClick = {
+                                scope.launch { app.dataStore.updateLiquidGlassQuality("OFF") }
                             }
                         )
                     }

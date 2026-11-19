@@ -13,6 +13,8 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.navArgument
+import com.lnxv.player.core.design.liquidBackdropSource
+import com.lnxv.player.core.design.rememberLiquidBackdrop
 import com.lnxv.player.ui.adb.AdbTerminalScreen
 import com.lnxv.player.ui.apk.ApkEditorScreen
 import com.lnxv.player.ui.apps.AppManagerScreen
@@ -45,11 +47,16 @@ fun LNXVNavigationHost(
         Screen.Settings.route
     ) || currentRoute.startsWith("files")
 
+    // Whatever the screens draw is recorded so the floating dock can refract it.
+    val dockBackdrop = rememberLiquidBackdrop()
+
     Box(modifier = modifier.fillMaxSize()) {
         NavHost(
             navController = navController,
             startDestination = Screen.Home.route,
-            modifier = Modifier.fillMaxSize()
+            modifier = Modifier
+                .fillMaxSize()
+                .liquidBackdropSource(dockBackdrop)
         ) {
             composable(Screen.Home.route) {
                 HomeScreen(
@@ -190,7 +197,8 @@ fun LNXVNavigationHost(
                         restoreState = true
                     }
                 },
-                modifier = Modifier.align(Alignment.BottomCenter)
+                modifier = Modifier.align(Alignment.BottomCenter),
+                backdrop = dockBackdrop
             )
         }
     }
