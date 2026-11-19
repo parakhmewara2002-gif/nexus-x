@@ -1,5 +1,6 @@
 package com.lnxv.player.ui.settings
 
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable

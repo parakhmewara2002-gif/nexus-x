@@ -142,7 +142,7 @@ class LiquidQualityController(context: Context) {
 
         val exec = Executors.newSingleThreadExecutor { r -> Thread(r, "lnxv-jank").apply { isDaemon = true } }
         executor = exec
-        jankStats = JankStats.createAndTrack(window, exec) { frame -> onFrame(frame.isJank) }.apply {
+        jankStats = JankStats.createAndTrack(window, JankStats.OnFrameListener { frame -> onFrame(frame.isJank) }).apply {
             jankHeuristicMultiplier = 1.5f
             isTrackingEnabled = false
         }
@@ -182,7 +182,8 @@ class LiquidQualityController(context: Context) {
         executor = null
     }
 
-    // runs on the single "lnxv-jank" thread
+    // called by JankStats on its own background thread, sequentially
+    @Synchronized
     private fun onFrame(isJank: Boolean) {
         framesInWindow++
         if (isJank) jankInWindow++
