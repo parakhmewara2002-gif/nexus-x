@@ -20,6 +20,8 @@ jobs:
           java-version: 17
       - uses: gradle/actions/setup-gradle@v4
       - run: chmod +x gradlew
+      - name: Drop machine-specific JDK path from gradle.properties (CI only)
+        run: sed -i '/org.gradle.java.home/d' gradle.properties
       - name: Build
         run: set -o pipefail; ./gradlew testDebugUnitTest assembleDebug --no-daemon 2>&1 | tee build.log
       - name: Surface compile errors as annotations
