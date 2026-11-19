@@ -2,10 +2,6 @@ package com.lnxv.player.core.design
 
 import android.graphics.BlurMaskFilter
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -24,7 +20,10 @@ import androidx.compose.ui.graphics.Paint
 import androidx.compose.ui.graphics.PaintingStyle
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.PathFillType
+import androidx.compose.ui.graphics.RenderEffect
 import androidx.compose.ui.graphics.Shape
+import androidx.compose.ui.graphics.layer.GraphicsLayer
+import androidx.compose.ui.graphics.drawscope.ContentDrawScope
 import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.drawscope.clipPath
@@ -32,8 +31,12 @@ import androidx.compose.ui.graphics.drawscope.drawIntoCanvas
 import androidx.compose.ui.graphics.drawscope.translate
 import androidx.compose.ui.graphics.layer.drawLayer
 import androidx.compose.ui.graphics.rememberGraphicsLayer
-import androidx.compose.ui.layout.onGloballyPositioned
+import androidx.compose.ui.layout.LayoutCoordinates
 import androidx.compose.ui.layout.positionInWindow
+import androidx.compose.ui.node.DrawModifierNode
+import androidx.compose.ui.node.GlobalPositionAwareModifierNode
+import androidx.compose.ui.node.ModifierNodeElement
+import androidx.compose.ui.node.invalidateDraw
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.Dp
@@ -92,7 +95,7 @@ private fun Outline.toComposePath(): Path = when (this) {
 }
 
 // ---------------------------------------------------------------------------------------------
-// Per-element cache (outline path, brushes, paints, compiled effect)
+// Per-element cache (outline path, brushes, paints, compiled effect, last-recorded state)
 // ---------------------------------------------------------------------------------------------
 private class GlassCache {
     var path = Path()
@@ -100,12 +103,21 @@ private class GlassCache {
     var radiusPx = 0f
     var strokeBrush: Brush? = null
     var reflectBrush: Brush? = null
+    var sheenBrush: Brush? = null
+    var fillBrush: Brush? = null
     val effects = LiquidEffectFactory()
     val blurPaint = Paint().apply { isAntiAlias = true }
     val reflectPaint = Paint().apply {
         isAntiAlias = true
         style = PaintingStyle.Stroke
     }
+
+    // what the element layer currently contains (lets us skip re-recording)
+    var recordedCount = -1
+    var recordedPos = Offset.Unspecified
+    var recordedSize = Size.Unspecified
+    var appliedEffect: RenderEffect? = null
+    var effectApplied = false
 
     private var lastShape: Shape? = null
     private var lastSize: Size = Size.Zero
@@ -139,6 +151,25 @@ private class GlassCache {
         val center = Offset(size.width / 2f, size.height / 2f)
         strokeBrush = angularBrush(center, style.strokeColor, style.strokeDimAlpha, style.strokeAngle)
         reflectBrush = angularBrush(center, style.reflectionColor, 0f, style.reflectionAngle)
+
+        // milky fallback (ADAPTIVE / no backdrop): gradient tint + soft diagonal sheen
+        val f = style.fallbackFill
+        fillBrush = Brush.verticalGradient(
+            listOf(
+                f.copy(alpha = (f.alpha * 1.10f).coerceAtMost(1f)),
+                f.copy(alpha = (f.alpha * 0.92f).coerceAtLeast(0f))
+            )
+        )
+        sheenBrush = Brush.linearGradient(
+            colors = listOf(
+                style.reflectionColor.copy(alpha = 0.30f * style.reflectionAlpha),
+                Color.Transparent
+            ),
+            start = Offset.Zero,
+            end = Offset(size.width * 0.8f, size.height * 0.9f)
+        )
+        // geometry changed -> any recorded slice is stale
+        recordedCount = -1
     }
 }
 
@@ -152,8 +183,13 @@ private class GlassCache {
  *   drop shadow  ->  refraction layer (backdrop refracted + frosted)  ->  inner shadow
  *   ->  1dp angular edge stroke  ->  tint  ->  YOUR CONTENT  ->  blurred angular reflection
  *
- * Needs a [backdrop] to refract. Without one (or on API < 31, or with quality OFF) it draws the
- * classic translucent glass so nothing ever renders blank.
+ * Rendering path depends on the effective [LiquidQuality]:
+ *  FULL / LITE : live backdrop refraction (needs [backdrop], API 31+)
+ *  ADAPTIVE    : milky gradient glass, fine border, cheap sheen. No shader, no backdrop sampling.
+ *  OFF         : same as ADAPTIVE but without sheen/shadows work.
+ *
+ * Implemented as a Modifier.Node: no Compose state is read or written while drawing, redraws are
+ * requested explicitly (backdrop re-recorded / element moved / parameters changed).
  *
  * @param compactStyle optional lighter style used automatically when the element is smaller than
  *                     [compactBelow] (keeps tiny chips/avatars cheap and legible).
@@ -169,41 +205,135 @@ fun Modifier.liquidGlass(
     val tier = LiquidGlassSupport.tier
     val quality = LocalLiquidQuality.current
     val sameWindow = backdrop != null && backdrop.hostView === LocalView.current
-    val useBackdrop = sameWindow && tier != LiquidTier.FLAT && quality != LiquidQuality.OFF
-    val cache = remember { GlassCache() }
-    var position by remember { mutableStateOf(Offset.Zero) }
-    val elementLayer = if (useBackdrop) rememberGraphicsLayer() else null
+    val live = sameWindow && tier != LiquidTier.FLAT &&
+        (quality == LiquidQuality.FULL || quality == LiquidQuality.LITE)
+    val elementLayer = if (live) rememberGraphicsLayer() else null
+    return this.then(
+        LiquidGlassElement(
+            backdrop = if (live) backdrop else null,
+            elementLayer = elementLayer,
+            shape = shape,
+            style = style,
+            compactStyle = compactStyle,
+            compactBelow = compactBelow,
+            tier = tier,
+            quality = quality
+        )
+    )
+}
 
-    val tracked = if (useBackdrop) {
-        this.onGloballyPositioned { position = it.positionInWindow() }
-    } else this
+private data class LiquidGlassElement(
+    val backdrop: LiquidBackdrop?,
+    val elementLayer: GraphicsLayer?,
+    val shape: Shape,
+    val style: LiquidGlassStyle,
+    val compactStyle: LiquidGlassStyle?,
+    val compactBelow: Dp,
+    val tier: LiquidTier,
+    val quality: LiquidQuality
+) : ModifierNodeElement<LiquidGlassNode>() {
+    override fun create() = LiquidGlassNode(
+        backdrop, elementLayer, shape, style, compactStyle, compactBelow, tier, quality
+    )
 
-    return tracked.drawWithContent {
+    override fun update(node: LiquidGlassNode) {
+        node.updateParams(backdrop, elementLayer, shape, style, compactStyle, compactBelow, tier, quality)
+    }
+}
+
+private class LiquidGlassNode(
+    private var backdrop: LiquidBackdrop?,
+    private var elementLayer: GraphicsLayer?,
+    private var shape: Shape,
+    private var style: LiquidGlassStyle,
+    private var compactStyle: LiquidGlassStyle?,
+    private var compactBelow: Dp,
+    private var tier: LiquidTier,
+    private var quality: LiquidQuality
+) : Modifier.Node(), DrawModifierNode, GlobalPositionAwareModifierNode {
+
+    private val cache = GlassCache()
+    private var position = Offset.Zero
+    private var registeredWith: LiquidBackdrop? = null
+    private val listener: () -> Unit = { if (isAttached) invalidateDraw() }
+
+    override fun onAttach() = syncRegistration()
+
+    override fun onDetach() {
+        registeredWith?.removeListener(listener)
+        registeredWith = null
+    }
+
+    private fun syncRegistration() {
+        if (registeredWith !== backdrop) {
+            registeredWith?.removeListener(listener)
+            backdrop?.addListener(listener)
+            registeredWith = backdrop
+        }
+    }
+
+    fun updateParams(
+        backdrop: LiquidBackdrop?,
+        elementLayer: GraphicsLayer?,
+        shape: Shape,
+        style: LiquidGlassStyle,
+        compactStyle: LiquidGlassStyle?,
+        compactBelow: Dp,
+        tier: LiquidTier,
+        quality: LiquidQuality
+    ) {
+        this.backdrop = backdrop
+        if (this.elementLayer !== elementLayer) {
+            this.elementLayer = elementLayer
+            cache.effectApplied = false
+            cache.recordedCount = -1
+        }
+        this.shape = shape
+        this.style = style
+        this.compactStyle = compactStyle
+        this.compactBelow = compactBelow
+        this.tier = tier
+        this.quality = quality
+        if (isAttached) {
+            syncRegistration()
+            invalidateDraw()
+        }
+    }
+
+    override fun onGloballyPositioned(coordinates: LayoutCoordinates) {
+        if (backdrop == null) return
+        val p = coordinates.positionInWindow()
+        if (p != position) {
+            position = p
+            invalidateDraw()
+        }
+    }
+
+    override fun ContentDrawScope.draw() {
         val w = size.width
         val h = size.height
         if (w <= 0f || h <= 0f) {
             drawContent()
-            return@drawWithContent
+            return
         }
 
         val st = if (compactStyle != null &&
             compactBelow != Dp.Unspecified &&
             min(w, h) < compactBelow.toPx()
-        ) compactStyle else style
+        ) compactStyle!! else style
 
         cache.update(shape, size, layoutDirection, this, st)
         val path = cache.path
-        val fancy = tier != LiquidTier.FLAT
+        val heavy = tier != LiquidTier.FLAT &&
+            (quality == LiquidQuality.FULL || quality == LiquidQuality.LITE)
 
         // 1. Drop shadow (outside the glass only)
-        if (fancy) st.dropShadow?.let { drawDropShadow(cache, it) }
+        if (heavy) st.dropShadow?.let { drawDropShadow(cache, it) }
 
-        // 2. Refraction layer
-        if (useBackdrop && elementLayer != null && backdrop != null) {
-            val origin = backdrop.origin
-            @Suppress("UNUSED_VARIABLE")
-            val subscribe = backdrop.version // redraw whenever the backdrop re-records
-
+        val bd = backdrop
+        val layer = elementLayer
+        if (bd != null && layer != null) {
+            // 2. Refraction layer: re-record the backdrop slice only if something changed
             val effect = cache.effects.effectFor(
                 RefractionKey(
                     width = w,
@@ -217,16 +347,30 @@ fun Modifier.liquidGlass(
                     tier = tier
                 )
             )
-            elementLayer.record(this, layoutDirection, IntSize(w.roundToInt(), h.roundToInt())) {
-                translate(left = origin.x - position.x, top = origin.y - position.y) {
-                    drawLayer(backdrop.layer)
+            val needsRecord = cache.recordedCount != bd.recordCount ||
+                cache.recordedPos != position ||
+                cache.recordedSize != size
+            if (needsRecord) {
+                val origin = bd.origin
+                val pos = position
+                layer.record(this, layoutDirection, IntSize(w.roundToInt(), h.roundToInt())) {
+                    translate(left = origin.x - pos.x, top = origin.y - pos.y) {
+                        drawLayer(bd.layer)
+                    }
                 }
+                cache.recordedCount = bd.recordCount
+                cache.recordedPos = pos
+                cache.recordedSize = size
             }
-            elementLayer.renderEffect = effect
-            clipPath(path) { drawLayer(elementLayer) }
+            if (!cache.effectApplied || cache.appliedEffect !== effect) {
+                layer.renderEffect = effect
+                cache.appliedEffect = effect
+                cache.effectApplied = true
+            }
+            clipPath(path) { drawLayer(layer) }
 
             // 3. Inner shadow (belongs to the refraction layer in the plugin)
-            if (fancy) st.innerShadow?.let { drawInnerShadow(cache, it) }
+            st.innerShadow?.let { drawInnerShadow(cache, it) }
 
             // 4. Angular edge stroke, 1dp "inside"
             cache.strokeBrush?.let { brush ->
@@ -238,17 +382,9 @@ fun Modifier.liquidGlass(
             // 5. Tint
             drawPath(path, st.tint)
         } else {
-            // Fallback: classic milky/dark translucent glass
-            val f = st.fallbackFill
-            drawPath(
-                path,
-                Brush.verticalGradient(
-                    listOf(
-                        f.copy(alpha = (f.alpha * 1.10f).coerceAtMost(1f)),
-                        f.copy(alpha = (f.alpha * 0.92f).coerceAtLeast(0f))
-                    )
-                )
-            )
+            // Milky gradient glass (ADAPTIVE / OFF / no backdrop): zero shader work
+            cache.fillBrush?.let { drawPath(path, it) }
+            if (quality != LiquidQuality.OFF) cache.sheenBrush?.let { drawPath(path, it) }
             cache.strokeBrush?.let { brush ->
                 clipPath(path) {
                     drawPath(path, brush, style = Stroke(width = st.strokeWidth.toPx() * 2f))
@@ -259,8 +395,8 @@ fun Modifier.liquidGlass(
         // 6. Content
         drawContent()
 
-        // 7. Highlight reflection (above content)
-        if (fancy) drawReflection(cache, st)
+        // 7. Highlight reflection (above content) - blurred, so only for FULL / LITE with backdrop
+        if (heavy && bd != null) drawReflection(cache, st)
     }
 }
 
@@ -278,26 +414,26 @@ fun Modifier.liquidGlassSurface(
 ): Modifier = composed {
     val backdrop = LocalLiquidBackdrop.current
     val quality = LocalLiquidQuality.current
-    // LITE (default): live refraction only on small, static elements (buttons). Cards / panels / rows
-    // that scroll stay on the cheap translucent look, so lists don't lag. FULL = everything.
-    val allowed = when (quality) {
-        LiquidQuality.FULL -> true
-        LiquidQuality.LITE -> kind == GlassKind.Button
-        LiquidQuality.OFF -> false
-    }
-    val active = backdrop != null &&
-        allowed &&
-        LiquidGlassSupport.tier != LiquidTier.FLAT &&
-        backdrop.hostView === LocalView.current
+    val sameWindow = backdrop != null && backdrop.hostView === LocalView.current
+    val canSample = sameWindow && LiquidGlassSupport.tier != LiquidTier.FLAT
 
-    if (active) {
+    // FULL : live refraction everywhere        LITE : live refraction on buttons only
+    // ADAPTIVE : milky gradient glass (no sampling)      OFF : classic flat panel
+    val mode = when (quality) {
+        LiquidQuality.FULL -> if (canSample) 2 else 0
+        LiquidQuality.LITE -> if (canSample && kind == GlassKind.Button) 2 else 0
+        LiquidQuality.ADAPTIVE -> 1
+        LiquidQuality.OFF -> 0
+    }
+
+    if (mode >= 1) {
         val main = rememberLiquidStyle(
             kind ?: GlassKind.Panel,
             tintOverride = if (backgroundColor == GlassWhiteMedium || backgroundColor == GlassWhiteHigh) Color.Unspecified else backgroundColor
         )
         val compact = rememberLiquidStyle(GlassKind.Chip)
         Modifier
-            .liquidGlass(backdrop, shape, main, compact, 48.dp)
+            .liquidGlass(if (mode == 2) backdrop else null, shape, main, compact, 48.dp)
             .clip(shape)
     } else {
         Modifier

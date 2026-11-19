@@ -37,9 +37,9 @@ fun SettingsScreen(
     val scope = rememberCoroutineScope()
     val updateManager = remember { SecureUpdateManager(context) }
 
-    val userPrefs by app.dataStore.userPreferencesFlow.collectAsState(initial = null)
+    val userPrefs by app.dataStore.userPreferencesFlow.collectAsStateWithLifecycle(initialValue = null)
     val currentTheme = userPrefs?.themeMode ?: "OBSIDIAN"
-    val currentLiquid = userPrefs?.liquidGlassQuality ?: "LITE"
+    val currentLiquid = userPrefs?.liquidGlassQuality ?: "AUTO"
 
     var showHiddenFiles by remember { mutableStateOf(false) }
     var hardwareAcceleration by remember { mutableStateOf(true) }
@@ -243,8 +243,19 @@ fun SettingsScreen(
                         )
 
                         ThemeOptionRow(
+                            title = "Auto (recommended)",
+                            subtitle = "Starts light and upgrades or downgrades by watching real frame timing, heat and memory",
+                            isSelected = currentLiquid == "AUTO",
+                            onClick = {
+                                scope.launch { app.dataStore.updateLiquidGlassQuality("AUTO") }
+                            }
+                        )
+
+                        HorizontalDivider(color = MaterialTheme.colorScheme.outline.copy(alpha = 0.2f))
+
+                        ThemeOptionRow(
                             title = "Full",
-                            subtitle = "Glass on cards and panels too. Prettiest, but can lag while scrolling",
+                            subtitle = "Refraction, colour fringing and frost on every surface. Prettiest, heaviest",
                             isSelected = currentLiquid == "FULL",
                             onClick = {
                                 scope.launch { app.dataStore.updateLiquidGlassQuality("FULL") }
@@ -255,10 +266,21 @@ fun SettingsScreen(
 
                         ThemeOptionRow(
                             title = "Lite",
-                            subtitle = "Recommended: glass dock and buttons, smooth scrolling",
+                            subtitle = "Simplified refraction on dock and buttons only, smooth scrolling",
                             isSelected = currentLiquid == "LITE",
                             onClick = {
                                 scope.launch { app.dataStore.updateLiquidGlassQuality("LITE") }
+                            }
+                        )
+
+                        HorizontalDivider(color = MaterialTheme.colorScheme.outline.copy(alpha = 0.2f))
+
+                        ThemeOptionRow(
+                            title = "Adaptive",
+                            subtitle = "Milky gradient glass with fine borders. No live shader, very light",
+                            isSelected = currentLiquid == "ADAPTIVE",
+                            onClick = {
+                                scope.launch { app.dataStore.updateLiquidGlassQuality("ADAPTIVE") }
                             }
                         )
 

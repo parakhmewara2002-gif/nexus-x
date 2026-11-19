@@ -9,12 +9,15 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.LaunchedEffect
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.core.content.ContextCompat
 import androidx.navigation.compose.rememberNavController
 import androidx.compose.runtime.CompositionLocalProvider
 import com.lnxv.player.core.design.LNXVTheme
 import com.lnxv.player.core.design.LiquidQuality
+import com.lnxv.player.core.design.LiquidQualityController
 import com.lnxv.player.core.design.LocalLiquidQuality
 import com.lnxv.player.playback.pip.PipManager
 import com.lnxv.player.ui.navigation.LNXVNavigationHost
@@ -29,6 +32,7 @@ import kotlinx.coroutines.launch
 class MainActivity : ComponentActivity() {
 
     private val prefScope = CoroutineScope(SupervisorJob() + Dispatchers.Main)
+    private val qualityController by lazy { LiquidQualityController(this) }
     @Volatile private var backgroundPlayEnabled = false
     @Volatile private var autoPipEnabled = true
 
@@ -48,8 +52,15 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         super.onCreate(savedInstanceState)
 
-        requestHighestRefreshRate()
         checkAndRequestPermissions()
+
+        // JankStats-backed adaptive renderer. Reads (never forces) the display's refresh rate.
+        @Suppress("DEPRECATION")
+        val display = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) display else windowManager.defaultDisplay
+        qualityController.attach(window, display)
+        // Optional per-session override (benchmarks / QA): adb ... --es lnxv.liquid_quality FULL|LITE|ADAPTIVE|OFF
+        // It is never persisted and never touches the user's saved setting.
+        val sessionQuality = intent?.getStringExtra("lnxv.liquid_quality")?.uppercase()
 
         val app = application as LNXVApplication
         val initialPrefs = runBlocking { app.dataStore.userPreferencesFlow.first() }
@@ -63,33 +74,20 @@ class MainActivity : ComponentActivity() {
         }
 
         setContent {
-            val prefs by app.dataStore.userPreferencesFlow.collectAsState(initial = initialPrefs)
+            val prefs by app.dataStore.userPreferencesFlow.collectAsStateWithLifecycle(initialValue = initialPrefs)
+            val autoQuality by qualityController.effective.collectAsStateWithLifecycle()
+            val setting = sessionQuality ?: prefs.liquidGlassQuality
+            val fixedQuality = remember(setting) { runCatching { LiquidQuality.valueOf(setting) }.getOrNull() }
+            // "AUTO" (or anything unrecognised) lets the controller decide; frame tracking only runs then
+            LaunchedEffect(fixedQuality) { qualityController.setActive(fixedQuality == null) }
+            val liquidQuality = fixedQuality ?: autoQuality
+
             LNXVTheme(themeMode = prefs.themeMode, darkTheme = prefs.isDarkMode, amoled = prefs.isAmoled) {
                 val navController = rememberNavController()
-                val liquidQuality = runCatching { LiquidQuality.valueOf(prefs.liquidGlassQuality) }
-                    .getOrDefault(LiquidQuality.LITE)
                 CompositionLocalProvider(LocalLiquidQuality provides liquidQuality) {
                     LNXVNavigationHost(navController = navController)
                 }
             }
-        }
-    }
-
-    @Suppress("DEPRECATION")
-    private fun requestHighestRefreshRate() {
-        try {
-            val display = windowManager.defaultDisplay
-            val current = display.mode
-            val best = display.supportedModes
-                .filter { it.physicalWidth == current.physicalWidth && it.physicalHeight == current.physicalHeight }
-                .maxByOrNull { it.refreshRate } ?: return
-            if (best.refreshRate > current.refreshRate) {
-                val lp = window.attributes
-                lp.preferredDisplayModeId = best.modeId
-                window.attributes = lp
-            }
-        } catch (e: Exception) {
-            // Best effort only
         }
     }
 
@@ -143,6 +141,7 @@ class MainActivity : ComponentActivity() {
     }
 
     override fun onDestroy() {
+        qualityController.release()
         val app = application as LNXVApplication
         if (isFinishing && app.isPlayerInitialized) {
             app.playerManager.stopPlayback()

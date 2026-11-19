@@ -52,7 +52,7 @@ import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -119,19 +119,19 @@ fun PlayerScreen(
     val activity = remember { context as? Activity }
     val playerManager = remember { (context.applicationContext as LNXVApplication).playerManager }
 
-    val playbackState by viewModel.playbackState.collectAsState()
-    val uiState by viewModel.uiState.collectAsState()
-    val audioTracks by viewModel.audioTracks.collectAsState()
-    val subtitleTracks by viewModel.subtitleTracks.collectAsState()
+    val playbackState by viewModel.playbackState.collectAsStateWithLifecycle()
+    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    val audioTracks by viewModel.audioTracks.collectAsStateWithLifecycle()
+    val subtitleTracks by viewModel.subtitleTracks.collectAsStateWithLifecycle()
 
     var overlayState by remember { mutableStateOf(GestureOverlayState()) }
     var isMoreMenuOpen by remember { mutableStateOf(false) }
     var showSleepDialog by remember { mutableStateOf(false) }
     var orientationMode by remember { mutableIntStateOf(0) }
     var playerViewRef by remember { mutableStateOf<PlayerView?>(null) }
-    val prefs by viewModel.userPrefs.collectAsState()
-    val subtitleDelayMs by viewModel.subtitleDelayMs.collectAsState()
-    val hasExternalSubtitle by viewModel.hasExternalSubtitle.collectAsState()
+    val prefs by viewModel.userPrefs.collectAsStateWithLifecycle()
+    val subtitleDelayMs by viewModel.subtitleDelayMs.collectAsStateWithLifecycle()
+    val hasExternalSubtitle by viewModel.hasExternalSubtitle.collectAsStateWithLifecycle()
     val subtitleFileLauncher = rememberLauncherForActivityResult(ActivityResultContracts.OpenDocument()) { uri ->
         if (uri != null) viewModel.loadExternalSubtitle(uri)
     }
@@ -572,7 +572,7 @@ fun PlayerScreen(
                         ) {
                             Column(modifier = Modifier.fillMaxWidth()) {
                                 // Timeline Scrubber
-                                val positionMs by viewModel.positionMs.collectAsState()
+                                val positionMs by viewModel.positionMs.collectAsStateWithLifecycle()
                                 var dragFraction by remember { mutableStateOf<Float?>(null) }
                                 Row(
                                     modifier = Modifier.fillMaxWidth(),

@@ -49,6 +49,14 @@ android {
             applicationIdSuffix = ".debug"
             isDebuggable = true
         }
+        // Used only by :benchmark (Macrobenchmark). Release-like, not debuggable, debug-signed.
+        create("benchmark") {
+            initWith(getByName("release"))
+            signingConfig = signingConfigs.getByName("debug")
+            matchingFallbacks += listOf("release")
+            isDebuggable = false
+            applicationIdSuffix = ".benchmark"
+        }
     }
 
     compileOptions {
@@ -84,6 +92,8 @@ dependencies {
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.lifecycle.viewmodel.compose)
+    implementation(libs.androidx.lifecycle.runtime.compose)
+    implementation(libs.androidx.metrics.performance)
     implementation(libs.androidx.activity.compose)
 
     // Compose

@@ -90,7 +90,8 @@ fun FloatingGlassNavBar(
     val isObsidian = LocalIsObsidianTheme.current
     val isAmoled = LocalIsAmoledTheme.current
     val quality = LocalLiquidQuality.current
-    val liquid = backdrop != null && isLiquidGlassAvailable() && quality != LiquidQuality.OFF
+    val liquid = backdrop != null && isLiquidGlassAvailable() &&
+        (quality == LiquidQuality.FULL || quality == LiquidQuality.LITE)
 
     val dockStyle = rememberLiquidStyle(GlassKind.Dock)
     val lensStyle = rememberLiquidStyle(GlassKind.Lens)

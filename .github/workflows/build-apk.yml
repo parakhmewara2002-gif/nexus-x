@@ -22,14 +22,31 @@ jobs:
       - run: chmod +x gradlew
       - name: Drop machine-specific JDK path from gradle.properties (CI only)
         run: sed -i '/org.gradle.java.home/d' gradle.properties
-      - name: Build
-        run: set -o pipefail; ./gradlew testDebugUnitTest assembleDebug --no-daemon 2>&1 | tee build.log
-      - name: Surface compile errors as annotations
+      - name: Unit tests + debug + release + benchmark module
+        run: set -o pipefail; ./gradlew testDebugUnitTest assembleDebug assembleRelease :benchmark:assembleBenchmark --no-daemon 2>&1 | tee build.log
+      - name: Lint (debug)
+        continue-on-error: true
+        run: set -o pipefail; ./gradlew lintDebug --no-daemon 2>&1 | tee lint.log
+      - name: Surface failures as annotations
         if: failure()
         run: |
           awk '/What went wrong/{f=1} f{print} /\* Try/{exit}' build.log | head -12 | tr '\n' ' ' | cut -c1-900 | while IFS= read -r l; do echo "::error::$l"; done
           grep -E '^e: ' build.log | head -9 | while IFS= read -r l; do echo "::error::${l:0:400}"; done
+      - name: Summarise lint
+        if: always()
+        run: |
+          f=app/build/reports/lint-results-debug.txt
+          if [ -f "$f" ]; then echo "::notice::lint: $(tail -3 "$f" | tr '\n' ' ')"; else grep -E 'errors?,|warnings?' lint.log | tail -2 | while IFS= read -r l; do echo "::notice::${l:0:300}"; done; fi
       - uses: actions/upload-artifact@v4
         with:
-          name: nexus-x-debug-apk
-          path: android_nexus/app/build/outputs/apk/debug/*.apk
+          name: nexus-x-apks
+          path: |
+            android_nexus/app/build/outputs/apk/debug/*.apk
+            android_nexus/app/build/outputs/apk/release/*.apk
+            android_nexus/benchmark/build/outputs/apk/benchmark/*.apk
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: lint-report
+          path: android_nexus/app/build/reports/lint-results-debug.*
+          if-no-files-found: ignore

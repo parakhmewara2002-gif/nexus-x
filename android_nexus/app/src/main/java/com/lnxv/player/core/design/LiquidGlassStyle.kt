@@ -145,12 +145,15 @@ internal fun liquidStyleFor(
         style = style.copy(tint = tintOverride.copy(alpha = a), fallbackFill = tintOverride)
     }
     if (lite) {
-        // LITE: no chromatic aberration, softer refraction, cheaper blur
+        // LITE: no chromatic aberration, softer refraction, cheaper blur, simplified reflection,
+        // no inner shadow and a lighter drop shadow
         style = style.copy(
             chromaticAberration = 0.dp,
             refractionStrength = style.refractionStrength * 0.6f,
             backgroundBlur = style.backgroundBlur * 0.7f,
-            reflectionBlur = style.reflectionBlur * 0.7f
+            reflectionBlur = style.reflectionBlur * 0.5f,
+            innerShadow = null,
+            dropShadow = style.dropShadow?.copy(blur = style.dropShadow.blur * 0.6f)
         )
     }
     return style

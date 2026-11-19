@@ -33,13 +33,15 @@ class LNXVApplication : Application(), ImageLoaderFactory {
     }
 
     override fun newImageLoader(): ImageLoader {
+        val lowRam = getSystemService(android.app.ActivityManager::class.java)?.isLowRamDevice == true
         return ImageLoader.Builder(this)
+            .allowRgb565(lowRam)
             .components {
                 add(VideoFrameDecoder.Factory())
             }
             .memoryCache {
                 MemoryCache.Builder(this)
-                    .maxSizePercent(0.25)
+                    .maxSizePercent(if (lowRam) 0.10 else 0.20)
                     .build()
             }
             .diskCache {
@@ -51,6 +53,14 @@ class LNXVApplication : Application(), ImageLoaderFactory {
             .respectCacheHeaders(false)
             .crossfade(true)
             .build()
+    }
+
+    override fun onTrimMemory(level: Int) {
+        super.onTrimMemory(level)
+        // Drop decoded thumbnails when the system is short on RAM; they re-decode from the disk cache.
+        if (level >= android.content.ComponentCallbacks2.TRIM_MEMORY_RUNNING_LOW) {
+            coil.Coil.imageLoader(this).memoryCache?.trimMemory(level)
+        }
     }
 
     companion object {
