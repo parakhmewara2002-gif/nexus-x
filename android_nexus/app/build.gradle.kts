@@ -10,10 +10,10 @@ android {
     compileSdk = 34
 
     defaultConfig {
-        applicationId = "com.lnxv.player"
+        applicationId = "com.uggamer.filemanager"
         minSdk = 26
         targetSdk = 34
-        val buildNum = System.getenv("VERSION_CODE")?.toIntOrNull() ?: 2
+        val buildNum = System.getenv("VERSION_CODE")?.toIntOrNull() ?: 3
         versionCode = 1000 + buildNum
         versionName = "1.0.$buildNum"
 

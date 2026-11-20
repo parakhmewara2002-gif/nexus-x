@@ -5,7 +5,7 @@ import androidx.test.uiautomator.By
 import androidx.test.uiautomator.Direction
 import androidx.test.uiautomator.Until
 
-const val TARGET_PACKAGE = "com.lnxv.player.benchmark"
+const val TARGET_PACKAGE = "com.uggamer.filemanager.benchmark"
 
 /** The three rendering pipelines + OFF, selected per session through an intent extra (never persisted). */
 val QUALITY_MODES = listOf("FULL", "LITE", "ADAPTIVE")
