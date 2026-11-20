@@ -53,7 +53,7 @@ fun AmbientGlassBackground(
     // `content` is a SIBLING of the source so glass never samples itself.
     val backdrop = rememberLiquidBackdrop()
 
-    Box(modifier = modifier.fillMaxSize()) {
+    Box(modifier = modifier.fillMaxSize().liquidScrollAware(backdrop)) {
         Box(
             modifier = Modifier
                 .fillMaxSize()

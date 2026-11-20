@@ -1,13 +1,19 @@
 package com.lnxv.player.core.design
 
+import android.os.Handler
+import android.os.Looper
 import android.view.View
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.drawscope.ContentDrawScope
+import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
+import androidx.compose.ui.input.nestedscroll.NestedScrollSource
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.graphics.layer.GraphicsLayer
 import androidx.compose.ui.graphics.layer.drawLayer
 import androidx.compose.ui.graphics.rememberGraphicsLayer
@@ -45,6 +51,24 @@ class LiquidBackdrop internal constructor(
         private set
 
     private val listeners = ArrayList<() -> Unit>(4)
+
+    /**
+     * True while the content under/around this backdrop is being scrolled (debounced, see
+     * [liquidScrollAware]). While true nothing is recorded and glass uses its cheap milky path,
+     * so scrolling never pays for shaders, blur effects or backdrop recording.
+     */
+    internal var scrolling: Boolean = false
+        private set
+
+    /** Lets the source node redraw (record again) when [scrolling] flips. */
+    internal var sourceInvalidator: (() -> Unit)? = null
+
+    internal fun setScrolling(value: Boolean) {
+        if (scrolling == value) return
+        scrolling = value
+        sourceInvalidator?.invoke()
+        for (i in 0 until listeners.size) listeners[i]()
+    }
 
     internal fun addListener(l: () -> Unit) {
         if (!listeners.contains(l)) listeners.add(l)
@@ -101,11 +125,30 @@ private data class LiquidBackdropSourceElement(val backdrop: LiquidBackdrop) :
     override fun create() = LiquidBackdropSourceNode(backdrop)
     override fun update(node: LiquidBackdropSourceNode) {
         node.backdrop = backdrop
+        node.bind()
     }
 }
 
 private class LiquidBackdropSourceNode(var backdrop: LiquidBackdrop) :
     Modifier.Node(), DrawModifierNode, GlobalPositionAwareModifierNode {
+
+    private val invalidator: () -> Unit = { if (isAttached) invalidateDraw() }
+    private var boundTo: LiquidBackdrop? = null
+
+    override fun onAttach() = bind()
+
+    override fun onDetach() {
+        boundTo?.let { if (it.sourceInvalidator === invalidator) it.sourceInvalidator = null }
+        boundTo = null
+    }
+
+    fun bind() {
+        if (boundTo !== backdrop) {
+            boundTo?.let { if (it.sourceInvalidator === invalidator) it.sourceInvalidator = null }
+            backdrop.sourceInvalidator = invalidator
+            boundTo = backdrop
+        }
+    }
 
     override fun onGloballyPositioned(coordinates: LayoutCoordinates) {
         val p = coordinates.positionInWindow()
@@ -116,6 +159,11 @@ private class LiquidBackdropSourceNode(var backdrop: LiquidBackdrop) :
     }
 
     override fun ContentDrawScope.draw() {
+        if (backdrop.scrolling) {
+            // scrolling: draw straight to the screen, no recording, no dependent invalidations
+            drawContent()
+            return
+        }
         val layer = backdrop.layer
         layer.record(
             this,
@@ -127,4 +175,33 @@ private class LiquidBackdropSourceNode(var backdrop: LiquidBackdrop) :
         drawLayer(layer)
         backdrop.dispatchRecorded()
     }
+}
+
+/**
+ * Detects scrolling of any scrollable descendant (touch drag or fling) and flips
+ * [LiquidBackdrop.scrolling] on, then off 180 ms after the last scroll delta.
+ * Costs one cheap callback per scroll event; does nothing for ADAPTIVE / OFF.
+ */
+@Composable
+fun Modifier.liquidScrollAware(backdrop: LiquidBackdrop): Modifier {
+    val quality = LocalLiquidQuality.current
+    val handler = remember { Handler(Looper.getMainLooper()) }
+    val stop = remember(backdrop) { Runnable { backdrop.setScrolling(false) } }
+    val connection = remember(backdrop) {
+        object : NestedScrollConnection {
+            override fun onPreScroll(available: Offset, source: NestedScrollSource): Offset {
+                if (available != Offset.Zero) {
+                    backdrop.setScrolling(true)
+                    handler.removeCallbacks(stop)
+                    handler.postDelayed(stop, 180L)
+                }
+                return Offset.Zero
+            }
+        }
+    }
+    DisposableEffect(backdrop) { onDispose { handler.removeCallbacks(stop) } }
+    if (LiquidGlassSupport.tier == LiquidTier.FLAT ||
+        quality == LiquidQuality.ADAPTIVE || quality == LiquidQuality.OFF
+    ) return this
+    return this.nestedScroll(connection)
 }

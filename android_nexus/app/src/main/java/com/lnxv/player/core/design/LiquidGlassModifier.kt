@@ -332,7 +332,8 @@ private class LiquidGlassNode(
 
         val bd = backdrop
         val layer = elementLayer
-        if (bd != null && layer != null) {
+        // live refraction only while the screen is still; during scroll fall back to the milky path
+        if (bd != null && layer != null && !bd.scrolling) {
             // 2. Refraction layer: re-record the backdrop slice only if something changed
             val effect = cache.effects.effectFor(
                 RefractionKey(

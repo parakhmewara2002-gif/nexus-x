@@ -14,6 +14,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.navArgument
 import com.lnxv.player.core.design.liquidBackdropSource
+import com.lnxv.player.core.design.liquidScrollAware
 import com.lnxv.player.core.design.rememberLiquidBackdrop
 import com.lnxv.player.ui.adb.AdbTerminalScreen
 import com.lnxv.player.ui.apk.ApkEditorScreen
@@ -56,6 +57,7 @@ fun LNXVNavigationHost(
             startDestination = Screen.Home.route,
             modifier = Modifier
                 .fillMaxSize()
+                .liquidScrollAware(dockBackdrop)
                 .liquidBackdropSource(dockBackdrop)
         ) {
             composable(Screen.Home.route) {

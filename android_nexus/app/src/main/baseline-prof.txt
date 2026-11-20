@@ -1,0 +1,3 @@
+# Pre-compile every NEXUS X method (AOT) so Compose list scrolling and navigation never wait for JIT.
+HSPLcom/lnxv/player/**;->**(**)**
+Lcom/lnxv/player/**;
