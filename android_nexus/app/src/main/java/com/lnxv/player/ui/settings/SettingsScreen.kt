@@ -50,10 +50,17 @@ fun SettingsScreen(
     var updateInfo by remember { mutableStateOf<AppUpdateInfo?>(null) }
     var showUpdateDialog by remember { mutableStateOf(false) }
 
+    // Real installed version (never hardcode it, or the update check compares against a wrong number)
+    val currentVersionName = remember {
+        runCatching {
+            context.packageManager.getPackageInfo(context.packageName, 0).versionName
+        }.getOrNull() ?: "1.0.0"
+    }
+
     fun checkAppUpdates() {
         scope.launch {
             isCheckingUpdate = true
-            val res = updateManager.checkUpdate("1.0.1")
+            val res = updateManager.checkUpdate(currentVersionName)
             updateInfo = res.getOrNull()
             isCheckingUpdate = false
             showUpdateDialog = true
@@ -148,7 +155,7 @@ fun SettingsScreen(
                                     overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis,
                                     modifier = Modifier.weight(1f, fill = false)
                                 )
-                                GlassBadge(text = "v1.0.1", color = PrimarySkyBlue)
+                                GlassBadge(text = "v$currentVersionName", color = PrimarySkyBlue)
                             }
                             Text(
                                 text = "Secure in-app OTA binary checking directly via GitHub Releases",
@@ -391,7 +398,7 @@ fun SettingsScreen(
                             color = AppColors.textPrimary
                         )
                         Text(
-                            text = "Version 1.0.1 (Build 1001)\nArchitecture: Clean MVVM + Jetpack Compose\nDesign Authority: Stitch Light Liquid Glass iOS 26\nOTA Channel: GitHub Verified Releases",
+                            text = "Version $currentVersionName\nArchitecture: Clean MVVM + Jetpack Compose\nDesign Authority: Stitch Light Liquid Glass iOS 26\nOTA Channel: GitHub Verified Releases",
                             fontSize = 12.sp,
                             color = AppColors.textMuted,
                             lineHeight = 18.sp

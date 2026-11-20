@@ -24,7 +24,7 @@ data class AppUpdateInfo(
 
 class SecureUpdateManager(private val context: Context) {
 
-    private val GITHUB_REPO = "LNXV/android_nexus" // Or configured release endpoint
+    private val GITHUB_REPO = "parakhmewara2002-gif/nexus-x" // GitHub Releases are read from here
 
     suspend fun checkUpdate(currentVersionName: String): Result<AppUpdateInfo> = withContext(Dispatchers.IO) {
         try {
@@ -67,13 +67,13 @@ class SecureUpdateManager(private val context: Context) {
                     )
                 )
             } else {
-                // If offline or release not published yet, report up to date
+                // No published release yet (404) or API error: report up to date, with the reason
                 Result.success(
                     AppUpdateInfo(
                         hasUpdate = false,
                         latestVersion = currentVersionName,
                         currentVersion = currentVersionName,
-                        releaseNotes = "You are on the latest verified release build.",
+                        releaseNotes = if (conn.responseCode == 404) "No GitHub release is published yet." else "Update server answered HTTP ${conn.responseCode}.",
                         downloadUrl = "",
                         publishedAt = "Latest"
                     )

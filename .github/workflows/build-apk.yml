@@ -5,6 +5,17 @@ on:
     branches: [ main, liquid-glass-ui ]
     paths: [ 'android_nexus/**' ]
   workflow_dispatch:
+    inputs:
+      publish:
+        description: 'Publish a GitHub Release (what the in-app updater reads)'
+        type: boolean
+        default: false
+
+permissions:
+  contents: write
+
+env:
+  VERSION_CODE: 2   # versionName = 1.0.<VERSION_CODE>, release tag = v1.0.<VERSION_CODE>
 
 jobs:
   build:
@@ -22,6 +33,11 @@ jobs:
       - run: chmod +x gradlew
       - name: Drop machine-specific JDK path from gradle.properties (CI only)
         run: sed -i '/org.gradle.java.home/d' gradle.properties
+      - name: Restore stable signing key (repo secrets)
+        run: |
+          echo "${{ secrets.KEYSTORE_B64 }}" | base64 -d > "$RUNNER_TEMP/nexus-release.jks"
+          echo "KEYSTORE_PATH=$RUNNER_TEMP/nexus-release.jks" >> "$GITHUB_ENV"
+          echo "KS_PASS=${{ secrets.KS_PASS }}" >> "$GITHUB_ENV"
       - name: Unit tests + debug + release + benchmark module
         run: set -o pipefail; ./gradlew testDebugUnitTest assembleDebug assembleRelease :benchmark:assembleBenchmark --no-daemon 2>&1 | tee build.log
       - name: Lint (debug)
@@ -37,6 +53,17 @@ jobs:
         run: |
           f=app/build/reports/lint-results-debug.txt
           if [ -f "$f" ]; then echo "::notice::lint: $(tail -3 "$f" | tr '\n' ' ')"; else grep -E 'errors?,|warnings?' lint.log | tail -2 | while IFS= read -r l; do echo "::notice::${l:0:300}"; done; fi
+      - name: Publish GitHub Release
+        if: github.event_name == 'workflow_dispatch' && inputs.publish
+        env:
+          GH_TOKEN: ${{ github.token }}
+        working-directory: .
+        run: |
+          APK=$(ls android_nexus/app/build/outputs/apk/release/*.apk | head -1)
+          cp "$APK" "nexus-x-1.0.${VERSION_CODE}.apk"
+          gh release create "v1.0.${VERSION_CODE}" "nexus-x-1.0.${VERSION_CODE}.apk" \
+            --target "${{ github.ref_name }}" --title "NEXUS X 1.0.${VERSION_CODE}" \
+            --notes "Liquid Glass UI, adaptive smooth rendering (Auto/Full/Lite/Adaptive), scroll-aware glass, fixed update card, working in-app updater."
       - uses: actions/upload-artifact@v4
         with:
           name: nexus-x-apks
