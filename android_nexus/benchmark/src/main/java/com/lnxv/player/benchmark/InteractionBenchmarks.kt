@@ -1,6 +1,7 @@
 package com.lnxv.player.benchmark
 
 import androidx.benchmark.macro.CompilationMode
+import androidx.benchmark.macro.ExperimentalMetricApi
 import androidx.benchmark.macro.FrameTimingMetric
 import androidx.benchmark.macro.MemoryUsageMetric
 import androidx.benchmark.macro.StartupMode
@@ -16,6 +17,7 @@ import org.junit.runner.RunWith
  * Storage / APK / Tools screens, plus memory and background<->foreground. All per quality mode.
  * Tab labels come from FloatingGlassNavBar (Home / Files / Device / Tools / Settings).
  */
+@OptIn(ExperimentalMetricApi::class)
 @RunWith(AndroidJUnit4::class)
 class InteractionBenchmarks {
     @get:Rule val rule = MacrobenchmarkRule()
