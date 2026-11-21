@@ -15,7 +15,7 @@ permissions:
   contents: write
 
 env:
-  VERSION_CODE: 3   # versionName = 1.0.<VERSION_CODE>, release tag = v1.0.<VERSION_CODE>
+  VERSION_CODE: 4   # versionName = 1.0.<VERSION_CODE>, release tag = v1.0.<VERSION_CODE>
 
 jobs:
   build:

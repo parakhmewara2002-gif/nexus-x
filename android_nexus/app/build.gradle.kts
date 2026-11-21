@@ -13,7 +13,7 @@ android {
         applicationId = "com.nexus.fliem"
         minSdk = 26
         targetSdk = 34
-        val buildNum = System.getenv("VERSION_CODE")?.toIntOrNull() ?: 3
+        val buildNum = System.getenv("VERSION_CODE")?.toIntOrNull() ?: 4
         versionCode = 1000 + buildNum
         versionName = "1.0.$buildNum"
 
