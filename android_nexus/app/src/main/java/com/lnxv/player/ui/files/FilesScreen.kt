@@ -486,7 +486,7 @@ private fun FileListItem(
                         maxLines = 1
                     )
                     Text(
-                        text = if (item.isDirectory) dateStr else "${item.formattedSize()} • $dateStr",
+                        text = if (item.isDirectory) dateStr else "${remember(item.size) { item.formattedSize() }} • $dateStr",
                         fontSize = 11.sp,
                         color = AppColors.textMuted
                     )
@@ -534,7 +534,7 @@ private fun FileGridItem(
                 maxLines = 1
             )
             Text(
-                text = if (item.isDirectory) "Folder" else item.formattedSize(),
+                text = if (item.isDirectory) "Folder" else remember(item.size) { item.formattedSize() },
                 fontSize = 10.sp,
                 color = AppColors.textMuted
             )

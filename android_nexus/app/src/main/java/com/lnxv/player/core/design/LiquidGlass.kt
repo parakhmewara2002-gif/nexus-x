@@ -197,12 +197,11 @@ fun GlassCard(
     val clickModifier = if (onClick != null || onLongClick != null) {
         val interactionSource = remember { MutableInteractionSource() }
         val isPressed by interactionSource.collectIsPressedAsState()
+        val thud = rememberThud()
+        // iOS press: quick, settles without wobble
         val scale by animateFloatAsState(
             targetValue = if (isPressed) 0.97f else 1.0f,
-            animationSpec = spring(
-                dampingRatio = Spring.DampingRatioMediumBouncy,
-                stiffness = Spring.StiffnessMedium
-            ),
+            animationSpec = spring(dampingRatio = 0.8f, stiffness = 700f),
             label = "glass_card_scale"
         )
         Modifier
@@ -211,7 +210,7 @@ fun GlassCard(
                 interactionSource = interactionSource,
                 indication = null,
                 onClick = onClick ?: {},
-                onLongClick = onLongClick
+                onLongClick = onLongClick?.let { cb -> { thud(); cb() } }
             )
     } else Modifier
 
@@ -334,12 +333,10 @@ fun GlassIconButton(
 
     val interactionSource = remember { MutableInteractionSource() }
     val isPressed by interactionSource.collectIsPressedAsState()
+    val tick = rememberTick()
     val scale by animateFloatAsState(
-        targetValue = if (isPressed) 0.90f else 1.0f,
-        animationSpec = spring(
-            dampingRatio = Spring.DampingRatioMediumBouncy,
-            stiffness = Spring.StiffnessLow
-        ),
+        targetValue = if (isPressed) 0.92f else 1.0f,
+        animationSpec = spring(dampingRatio = 0.8f, stiffness = 700f),
         label = "glass_icon_btn_scale"
     )
 
@@ -357,7 +354,7 @@ fun GlassIconButton(
             .clickable(
                 interactionSource = interactionSource,
                 indication = null,
-                onClick = onClick
+                onClick = { tick(); onClick() }
             ),
         contentAlignment = Alignment.Center
     ) {

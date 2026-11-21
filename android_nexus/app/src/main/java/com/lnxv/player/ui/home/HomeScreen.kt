@@ -72,7 +72,7 @@ fun HomeScreen(
             verticalArrangement = Arrangement.spacedBy(20.dp)
         ) {
             // Header: Greeting & Profile
-            item {
+            item(key = "section_1") {
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceBetween,
@@ -129,7 +129,7 @@ fun HomeScreen(
             }
 
             // Storage Overview Card (Liquid Glass with Circular Gauge)
-            item {
+            item(key = "section_2") {
                 GlassCard(
                     modifier = Modifier.fillMaxWidth(),
                     onClick = onNavigateToAnalyzer
@@ -219,7 +219,7 @@ fun HomeScreen(
             }
 
             // Quick Category Shortcuts (Images, Videos, Audio, Docs, APKs, Downloads, Vault, Archives)
-            item {
+            item(key = "section_3") {
                 Text(
                     text = "Categories",
                     fontSize = 18.sp,
@@ -228,7 +228,7 @@ fun HomeScreen(
                 )
             }
 
-            item {
+            item(key = "section_4") {
                 val base = Environment.getExternalStorageDirectory().absolutePath
                 val categories = listOf(
                     CategoryItem("Images", Icons.Default.Image, Color(0xFF0284C7), "$base/Pictures"),
@@ -281,7 +281,7 @@ fun HomeScreen(
             }
 
             // Storage Locations (Internal, SD Card, OTG)
-            item {
+            item(key = "section_5") {
                 Text(
                     text = "Storage Locations",
                     fontSize = 18.sp,
@@ -290,7 +290,7 @@ fun HomeScreen(
                 )
             }
 
-            item {
+            item(key = "section_6") {
                 Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
                     volumes.forEach { vol ->
                         GlassCard(

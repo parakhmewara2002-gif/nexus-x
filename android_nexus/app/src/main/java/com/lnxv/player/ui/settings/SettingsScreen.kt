@@ -76,7 +76,7 @@ fun SettingsScreen(
             verticalArrangement = Arrangement.spacedBy(18.dp)
         ) {
             // Header
-            item {
+            item(key = "section_1") {
                 Text(
                     text = "Settings",
                     fontSize = 24.sp,
@@ -91,7 +91,7 @@ fun SettingsScreen(
             }
 
             // In-App Secure Update Section (GitHub Releases)
-            item {
+            item(key = "section_2") {
                 Text(
                     text = "Updates & Maintenance",
                     fontSize = 16.sp,
@@ -100,7 +100,7 @@ fun SettingsScreen(
                 )
             }
 
-            item {
+            item(key = "section_3") {
                 val isObsidian = LocalIsObsidianTheme.current
                 val isAmoled = LocalIsAmoledTheme.current
 
@@ -185,7 +185,7 @@ fun SettingsScreen(
             }
 
             // Theme section
-            item {
+            item(key = "section_4") {
                 Text(
                     text = "Appearance & Theme",
                     fontSize = 16.sp,
@@ -194,7 +194,7 @@ fun SettingsScreen(
                 )
             }
 
-            item {
+            item(key = "section_5") {
                 GlassCard(modifier = Modifier.fillMaxWidth()) {
                     Column(
                         modifier = Modifier.padding(18.dp),
@@ -307,7 +307,7 @@ fun SettingsScreen(
             }
 
             // File Manager Behavior
-            item {
+            item(key = "section_6") {
                 Text(
                     text = "File Manager Preferences",
                     fontSize = 16.sp,
@@ -316,7 +316,7 @@ fun SettingsScreen(
                 )
             }
 
-            item {
+            item(key = "section_7") {
                 GlassCard(modifier = Modifier.fillMaxWidth()) {
                     Column(
                         modifier = Modifier.padding(18.dp),
@@ -376,7 +376,7 @@ fun SettingsScreen(
             }
 
             // About application
-            item {
+            item(key = "section_8") {
                 Text(
                     text = "About NEXUS X",
                     fontSize = 16.sp,
@@ -385,7 +385,7 @@ fun SettingsScreen(
                 )
             }
 
-            item {
+            item(key = "section_9") {
                 GlassCard(modifier = Modifier.fillMaxWidth()) {
                     Column(
                         modifier = Modifier.padding(18.dp),
@@ -484,11 +484,12 @@ private fun ThemeOptionRow(
     isSelected: Boolean,
     onClick: () -> Unit
 ) {
+    val tick = com.lnxv.player.core.design.rememberTick()
     Row(
         modifier = Modifier
             .fillMaxWidth()
             .clip(RoundedCornerShape(12.dp))
-            .clickable(onClick = onClick)
+            .clickable(onClick = { tick(); onClick() })
             .padding(vertical = 4.dp),
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically

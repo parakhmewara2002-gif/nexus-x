@@ -99,6 +99,7 @@ fun FloatingGlassNavBar(
     val tabs = NavTab.values()
     val selectedIndex = tabs.indexOfFirst { currentRoute.startsWith(it.route) }
 
+    val tick = com.lnxv.player.core.design.rememberTick()
     val density = LocalDensity.current
     val itemX = remember { mutableStateMapOf<Int, Float>() }
     val itemW = remember { mutableStateMapOf<Int, Int>() }
@@ -166,7 +167,10 @@ fun FloatingGlassNavBar(
                             tab = tab,
                             isSelected = isSelected,
                             showFlatPill = !liquid,
-                            onClick = { onNavigate(tab.route) },
+                            onClick = {
+                                if (!isSelected) tick()
+                                onNavigate(tab.route)
+                            },
                             modifier = Modifier.onGloballyPositioned { coords ->
                                 itemX[index] = coords.positionInParent().x
                                 itemW[index] = coords.size.width
@@ -196,10 +200,7 @@ private fun NavPillItem(
     // Bouncy Spring Press Scale
     val pressScale by animateFloatAsState(
         targetValue = if (isPressed) 0.88f else 1.0f,
-        animationSpec = spring(
-            dampingRatio = Spring.DampingRatioMediumBouncy,
-            stiffness = Spring.StiffnessMedium
-        ),
+        animationSpec = spring(dampingRatio = 0.8f, stiffness = 700f),
         label = "nav_pill_press_scale"
     )
 

@@ -94,20 +94,6 @@ class SecureUpdateManager(private val context: Context) {
         }
     }
 
-    private fun isNewerVersion(latest: String, current: String): Boolean {
-        try {
-            val lParts = latest.split(".").map { it.toIntOrNull() ?: 0 }
-            val cParts = current.split(".").map { it.toIntOrNull() ?: 0 }
-            for (i in 0 until maxOf(lParts.size, cParts.size)) {
-                val l = lParts.getOrElse(i) { 0 }
-                val c = cParts.getOrElse(i) { 0 }
-                if (l > c) return true
-                if (l < c) return false
-            }
-        } catch (_: Exception) {}
-        return false
-    }
-
     fun downloadAndInstall(apkUrl: String) {
         try {
             val intent = Intent(Intent.ACTION_VIEW, Uri.parse(apkUrl)).apply {
@@ -116,4 +102,16 @@ class SecureUpdateManager(private val context: Context) {
             context.startActivity(intent)
         } catch (_: Exception) {}
     }
+}
+
+/** Dotted-number comparison: "1.0.10" is newer than "1.0.9"; non-numeric parts count as 0. */
+internal fun isNewerVersion(latest: String, current: String): Boolean {
+    val l = latest.removePrefix("v").split(".").map { it.toIntOrNull() ?: 0 }
+    val c = current.removePrefix("v").split(".").map { it.toIntOrNull() ?: 0 }
+    for (i in 0 until maxOf(l.size, c.size)) {
+        val a = l.getOrElse(i) { 0 }
+        val b = c.getOrElse(i) { 0 }
+        if (a != b) return a > b
+    }
+    return false
 }

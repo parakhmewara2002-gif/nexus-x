@@ -23,8 +23,7 @@ import com.lnxv.player.playback.pip.PipManager
 import com.lnxv.player.ui.navigation.LNXVNavigationHost
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.runBlocking
-import kotlinx.coroutines.flow.first
+import com.lnxv.player.core.datastore.UserPreferences
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
@@ -63,13 +62,33 @@ class MainActivity : ComponentActivity() {
         val sessionQuality = intent?.getStringExtra("lnxv.liquid_quality")?.uppercase()
 
         val app = application as LNXVApplication
-        val initialPrefs = runBlocking { app.dataStore.userPreferencesFlow.first() }
+        // First frame must never wait for DataStore (disk). The settings that decide how the first
+        // frame looks are mirrored into a tiny SharedPreferences file; DataStore stays the source of truth
+        // and takes over as soon as it has loaded.
+        val boot = getSharedPreferences("lnxv_boot", MODE_PRIVATE)
+        val defaults = UserPreferences()
+        val initialPrefs = defaults.copy(
+            themeMode = boot.getString("theme", null) ?: defaults.themeMode,
+            isDarkMode = boot.getBoolean("dark", defaults.isDarkMode),
+            isAmoled = boot.getBoolean("amoled", defaults.isAmoled),
+            liquidGlassQuality = boot.getString("liquid", null) ?: defaults.liquidGlassQuality,
+            isBackgroundPlayEnabled = boot.getBoolean("bgplay", defaults.isBackgroundPlayEnabled),
+            isAutoPiPEnabled = boot.getBoolean("autopip", defaults.isAutoPiPEnabled)
+        )
         backgroundPlayEnabled = initialPrefs.isBackgroundPlayEnabled
         autoPipEnabled = initialPrefs.isAutoPiPEnabled
         prefScope.launch {
             app.dataStore.userPreferencesFlow.collect {
                 backgroundPlayEnabled = it.isBackgroundPlayEnabled
                 autoPipEnabled = it.isAutoPiPEnabled
+                boot.edit()
+                    .putString("theme", it.themeMode)
+                    .putBoolean("dark", it.isDarkMode)
+                    .putBoolean("amoled", it.isAmoled)
+                    .putString("liquid", it.liquidGlassQuality)
+                    .putBoolean("bgplay", it.isBackgroundPlayEnabled)
+                    .putBoolean("autopip", it.isAutoPiPEnabled)
+                    .apply()
             }
         }
 

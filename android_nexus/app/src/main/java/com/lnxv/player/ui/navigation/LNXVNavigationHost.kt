@@ -1,11 +1,18 @@
 package com.lnxv.player.ui.navigation
 
+import androidx.compose.animation.core.Spring
+import androidx.compose.animation.core.spring
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInHorizontally
+import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.IntOffset
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
@@ -58,7 +65,25 @@ fun LNXVNavigationHost(
             modifier = Modifier
                 .fillMaxSize()
                 .liquidScrollAware(dockBackdrop)
-                .liquidBackdropSource(dockBackdrop)
+                .liquidBackdropSource(dockBackdrop),
+            // iOS-style: tabs cross-fade, pushed screens slide in from the right while the one below
+            // drifts left at 1/3 speed; back reverses it. Springs, so the motion is interruptible.
+            enterTransition = {
+                if (isTabToTab(initialState.destination.route, targetState.destination.route)) fadeIn(NavFadeSpring)
+                else slideInHorizontally(NavPushSpring) { it }
+            },
+            exitTransition = {
+                if (isTabToTab(initialState.destination.route, targetState.destination.route)) fadeOut(NavFadeSpring)
+                else slideOutHorizontally(NavPushSpring) { -it / 3 } + fadeOut(NavFadeSpring)
+            },
+            popEnterTransition = {
+                if (isTabToTab(initialState.destination.route, targetState.destination.route)) fadeIn(NavFadeSpring)
+                else slideInHorizontally(NavPushSpring) { -it / 3 } + fadeIn(NavFadeSpring)
+            },
+            popExitTransition = {
+                if (isTabToTab(initialState.destination.route, targetState.destination.route)) fadeOut(NavFadeSpring)
+                else slideOutHorizontally(NavPushSpring) { it }
+            }
         ) {
             composable(Screen.Home.route) {
                 HomeScreen(
@@ -205,3 +230,20 @@ fun LNXVNavigationHost(
         }
     }
 }
+
+private val NavPushSpring = spring(
+    dampingRatio = 0.92f,
+    stiffness = 420f,
+    visibilityThreshold = IntOffset.VisibilityThreshold
+)
+private val NavFadeSpring = spring<Float>(stiffness = Spring.StiffnessMediumLow)
+
+private val TAB_BASE_ROUTES = setOf("home", "files", "device", "tools", "settings")
+
+/** "files?path=x" / "player/12" -> "files" / "player". */
+internal fun baseRoute(route: String?): String =
+    route?.substringBefore('?')?.substringBefore('/') ?: ""
+
+/** True when both ends are bottom-dock tabs (those cross-fade instead of sliding). */
+internal fun isTabToTab(from: String?, to: String?): Boolean =
+    baseRoute(from) in TAB_BASE_ROUTES && baseRoute(to) in TAB_BASE_ROUTES
