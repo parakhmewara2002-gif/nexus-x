@@ -194,7 +194,7 @@ fun VaultScreen(
                                     GlassBadge(text = "AES-GCM", color = EmeraldSuccess)
                                 }
                                 Text(
-                                    text = "Encrypted storage path: /Android/data/com.uggamer.filemanager/files/vault",
+                                    text = "Encrypted storage path: /Android/data/com.nexus.fliem/files/vault",
                                     fontSize = 12.sp,
                                     color = AppColors.textMuted
                                 )

@@ -10,7 +10,7 @@ android {
     compileSdk = 34
 
     defaultConfig {
-        applicationId = "com.uggamer.filemanager"
+        applicationId = "com.nexus.fliem"
         minSdk = 26
         targetSdk = 34
         val buildNum = System.getenv("VERSION_CODE")?.toIntOrNull() ?: 3
